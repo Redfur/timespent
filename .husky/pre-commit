@@ -1,6 +1,3 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
-
 # Identify the package manager based on lock file presence
 if [ -f "pnpm-lock.yaml" ]; then
   LS_CMD="pnpm lint-staged"
