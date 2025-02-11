@@ -1,5 +1,13 @@
+import Button from '@mui/material/Button/Button';
+
 function App() {
-  return <h1>Yet another personal React starter template</h1>;
+  return (
+    <div>
+      <h1>Hello World</h1>
+      <p>text</p>
+      <Button>Button</Button>
+    </div>
+  );
 }
 
 export default App;
