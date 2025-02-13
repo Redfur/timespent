@@ -18,7 +18,7 @@ export const WorkTimeInput = () => {
   const workHours = endTime.diff(startTime, 'hour');
 
   return (
-    <Card>
+    <Card raised>
       <CardHeader
         title={
           workHours > 0
