@@ -20,10 +20,14 @@ export const WorkTimeInput = () => {
   return (
     <Card>
       <CardHeader
-        title={`${t('title')} - ${t('hours', {
-          count: workHours,
-          ns: 'common',
-        })}`}
+        title={
+          workHours > 0
+            ? `${t('title')} - ${t('hours', {
+                count: workHours,
+                ns: 'common',
+              })}`
+            : t('title')
+        }
       />
       <CardContent>
         <Box sx={{ display: 'flex', gap: 2 }}>
