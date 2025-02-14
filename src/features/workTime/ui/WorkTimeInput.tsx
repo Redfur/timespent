@@ -4,10 +4,10 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { TRANS_KEY } from '../i18n';
+import { TRANS_NS } from '../i18n';
 
 export const WorkTimeInput = () => {
-  const { t } = useTranslation(TRANS_KEY);
+  const { t } = useTranslation(TRANS_NS);
   const [startTime, setStartTime] = useState<Dayjs>(
     dayjs().set('hour', 9).set('minute', 0),
   );
@@ -36,6 +36,7 @@ export const WorkTimeInput = () => {
             format="HH:mm"
             maxTime={endTime}
             value={startTime}
+            fullWidth
             onChange={d => setStartTime(d || dayjs('09:00'))}
           />
           <TimeField
@@ -43,6 +44,7 @@ export const WorkTimeInput = () => {
             format="HH:mm"
             minTime={startTime}
             value={endTime}
+            fullWidth
             onChange={d => setEndTime(d || dayjs('17:00'))}
           />
         </Box>

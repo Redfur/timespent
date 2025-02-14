@@ -13,6 +13,6 @@ const translations = {
   },
 };
 
-export const TRANS_KEY = 'workTime';
+export const TRANS_NS = 'workTime';
 
-injectTranslation(TRANS_KEY, translations);
+injectTranslation(TRANS_NS, translations);
