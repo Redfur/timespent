@@ -1,17 +1,14 @@
-import { Container, Stack } from '@mui/material';
-import { SalaryInput } from '~/features/salaryInput';
-import { ThemeChange } from '~/features/themeChange';
-import { WorkTimeInput } from '~/features/workTime';
+import { Box, Container } from '@mui/material';
+import { SettingsSidebar } from '~/features/settingsSidebar/ui/SettingsSidebar';
+import { TimeSpentCalculator } from '~/features/timeSpentCalculator';
 
 export const MainPage = () => {
   return (
     <Container maxWidth="md">
-      <ThemeChange />
-      <h1>Ради чего вы работаете?</h1>
-      <Stack spacing={2}>
-        <WorkTimeInput />
-        <SalaryInput />
-      </Stack>
+      <Box sx={{ position: 'absolute', top: 8, right: 8 }}>
+        <SettingsSidebar />
+      </Box>
+      <TimeSpentCalculator />
     </Container>
   );
 };

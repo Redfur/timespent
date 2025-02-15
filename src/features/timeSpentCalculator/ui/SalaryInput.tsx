@@ -17,8 +17,8 @@ const formatCurrency = (value: string) => {
 };
 
 export const SalaryInput = () => {
-  const { t } = useTranslation(TRANS_NS);
-  const [salary, setSalary] = useState('50000');
+  const { t } = useTranslation(TRANS_NS, { keyPrefix: 'salaryInput' });
+  const [salary, setSalary] = useState('50 000');
   const salaryNumber = Number(salary.replace(/\s/g, ''));
   return (
     <Card raised>

@@ -22,17 +22,17 @@ export const WorkTimeInput = () => {
       <CardHeader
         title={
           workHours > 0
-            ? `${t('title')} - ${t('hours', {
+            ? `${t('workTimeInput.title')} - ${t('hours', {
                 count: workHours,
                 ns: 'common',
               })}`
-            : t('title')
+            : t('workTimeInput.title')
         }
       />
       <CardContent>
         <Box sx={{ display: 'flex', gap: 2 }}>
           <TimeField
-            label={t('startTime')}
+            label={t('workTimeInput.startTime')}
             format="HH:mm"
             maxTime={endTime}
             value={startTime}
@@ -40,7 +40,7 @@ export const WorkTimeInput = () => {
             onChange={d => setStartTime(d || dayjs('09:00'))}
           />
           <TimeField
-            label={t('endTime')}
+            label={t('workTimeInput.endTime')}
             format="HH:mm"
             minTime={startTime}
             value={endTime}
