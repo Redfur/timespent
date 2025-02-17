@@ -21,7 +21,7 @@ export const SalaryInput = () => {
   const [salary, setSalary] = useState('50 000');
   const salaryNumber = Number(salary.replace(/\s/g, ''));
   return (
-    <Card raised>
+    <Card>
       <CardHeader title={t('title')} />
       <CardContent>
         <Typography mb={2}>{t('description')}</Typography>
