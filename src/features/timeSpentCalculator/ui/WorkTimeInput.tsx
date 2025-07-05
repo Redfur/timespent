@@ -1,41 +1,56 @@
 import { Box, Card, CardContent, CardHeader, FormControlLabel, Switch } from '@mui/material';
 import { TimeField } from '@mui/x-date-pickers';
-import dayjs, { type Dayjs } from 'dayjs';
-import { useEffect, useState } from 'react';
+import type { Dayjs } from 'dayjs';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-
 import { TRANS_NS } from '../i18n';
+import { useSettingsStore } from '../store/settingsStore';
 
-interface WorkTimeInputProps {
-	onHoursChange?: (hours: number) => void;
-}
-
-export const WorkTimeInput = ({ onHoursChange }: WorkTimeInputProps) => {
+export const WorkTimeInput = () => {
 	const { t } = useTranslation(TRANS_NS);
-	const [startTime, setStartTime] = useState<Dayjs>(dayjs().set('hour', 9).set('minute', 0));
-	const [endTime, setEndTime] = useState<Dayjs>(dayjs().set('hour', 18).set('minute', 0));
-	const [lunchStartTime, setLunchStartTime] = useState<Dayjs>(dayjs().set('hour', 13).set('minute', 0));
-	const [lunchEndTime, setLunchEndTime] = useState<Dayjs>(dayjs().set('hour', 14).set('minute', 0));
-	const [includeLunch, setIncludeLunch] = useState(true);
+	const { workTime, workHours, updateWorkTime } = useSettingsStore();
 
-	// Рассчитываем рабочие часы с учетом обеда
-	const calculateWorkHours = () => {
-		const totalHours = endTime.diff(startTime, 'hour', true);
+	const startTimeRef = useRef<Dayjs | undefined>(workTime.startTime);
+	const endTimeRef = useRef<Dayjs | undefined>(workTime.endTime);
+	const lunchStartTimeRef = useRef<Dayjs | undefined>(workTime.lunchStartTime);
+	const lunchEndTimeRef = useRef<Dayjs | undefined>(workTime.lunchEndTime);
 
-		if (includeLunch) {
-			const lunchHours = lunchEndTime.diff(lunchStartTime, 'hour', true);
-			return Math.max(0, totalHours - lunchHours);
-		}
+	// Сброс значений при изменении store (например, при загрузке)
+	useEffect(() => {
+		startTimeRef.current = workTime.startTime;
+		endTimeRef.current = workTime.endTime;
+		lunchStartTimeRef.current = workTime.lunchStartTime;
+		lunchEndTimeRef.current = workTime.lunchEndTime;
+	}, [workTime]);
 
-		return totalHours;
+	const handleCommit = () => {
+		updateWorkTime({
+			startTime: startTimeRef.current || workTime.startTime,
+			endTime: endTimeRef.current || workTime.endTime,
+			lunchStartTime: lunchStartTimeRef.current || workTime.lunchStartTime,
+			lunchEndTime: lunchEndTimeRef.current || workTime.lunchEndTime,
+		});
 	};
 
-	const workHours = calculateWorkHours();
+	const handleTimeKeyDown = (e: React.KeyboardEvent) => {
+		if (e.key === 'Enter') {
+			handleCommit();
+			(e.target as HTMLInputElement).blur();
+		}
+	};
 
-	// Уведомляем родительский компонент об изменении часов
-	useEffect(() => {
-		onHoursChange?.(workHours);
-	}, [workHours, onHoursChange]);
+	const handleStartTimeChange = (d: Dayjs | null) => {
+		startTimeRef.current = d || workTime.startTime;
+	};
+	const handleEndTimeChange = (d: Dayjs | null) => {
+		endTimeRef.current = d || workTime.endTime;
+	};
+	const handleLunchStartTimeChange = (d: Dayjs | null) => {
+		lunchStartTimeRef.current = d || workTime.lunchStartTime;
+	};
+	const handleLunchEndTimeChange = (d: Dayjs | null) => {
+		lunchEndTimeRef.current = d || workTime.lunchEndTime;
+	};
 
 	return (
 		<Card>
@@ -56,45 +71,58 @@ export const WorkTimeInput = ({ onHoursChange }: WorkTimeInputProps) => {
 						<TimeField
 							label={t('workTimeInput.startTime')}
 							format="HH:mm"
-							maxTime={endTime}
-							value={startTime}
+							maxTime={endTimeRef.current}
+							defaultValue={workTime.startTime}
 							fullWidth
-							onChange={d => setStartTime(d || dayjs('09:00'))}
+							onChange={handleStartTimeChange}
+							onBlur={handleCommit}
+							onKeyDown={handleTimeKeyDown}
 						/>
 						<TimeField
 							label={t('workTimeInput.endTime')}
 							format="HH:mm"
-							minTime={startTime}
-							value={endTime}
+							minTime={startTimeRef.current}
+							defaultValue={workTime.endTime}
 							fullWidth
-							onChange={d => setEndTime(d || dayjs('17:00'))}
+							onChange={handleEndTimeChange}
+							onBlur={handleCommit}
+							onKeyDown={handleTimeKeyDown}
 						/>
 					</Box>
 
 					{/* Переключатель времени обеда */}
 					<FormControlLabel
-						control={<Switch checked={includeLunch} onChange={e => setIncludeLunch(e.target.checked)} />}
+						control={
+							<Switch
+								checked={workTime.includeLunch}
+								onChange={e => updateWorkTime({ includeLunch: e.target.checked })}
+							/>
+						}
 						label={t('workTimeInput.includeLunch')}
 					/>
 
 					{/* Время обеда */}
-					{includeLunch && (
+					{workTime.includeLunch && (
 						<Box sx={{ display: 'flex', gap: 2 }}>
 							<TimeField
 								label={t('workTimeInput.lunchStart')}
 								format="HH:mm"
-								maxTime={lunchEndTime}
-								value={lunchStartTime}
+								maxTime={lunchEndTimeRef.current}
+								defaultValue={workTime.lunchStartTime}
 								fullWidth
-								onChange={d => setLunchStartTime(d || dayjs('13:00'))}
+								onChange={handleLunchStartTimeChange}
+								onBlur={handleCommit}
+								onKeyDown={handleTimeKeyDown}
 							/>
 							<TimeField
 								label={t('workTimeInput.lunchEnd')}
 								format="HH:mm"
-								minTime={lunchStartTime}
-								value={lunchEndTime}
+								minTime={lunchStartTimeRef.current}
+								defaultValue={workTime.lunchEndTime}
 								fullWidth
-								onChange={d => setLunchEndTime(d || dayjs('14:00'))}
+								onChange={handleLunchEndTimeChange}
+								onBlur={handleCommit}
+								onKeyDown={handleTimeKeyDown}
 							/>
 						</Box>
 					)}

@@ -53,6 +53,7 @@ const translations = {
 			ofSalary: 'от зарплаты',
 			freeFunds: 'Свободные средства',
 			hoursShort: 'ч',
+			freeTime: 'Свободное время',
 		},
 		common: {
 			cancel: 'Отмена',
@@ -139,6 +140,7 @@ const translations = {
 			ofSalary: 'of salary',
 			freeFunds: 'Free funds',
 			hoursShort: 'h',
+			freeTime: 'Free time',
 		},
 		common: {
 			cancel: 'Cancel',

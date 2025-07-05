@@ -1,7 +1,8 @@
 import { Card, CardContent, CardHeader, InputAdornment, TextField, Typography } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TRANS_NS } from '../i18n';
+import { useSettingsStore } from '../store/settingsStore';
 
 const formatCurrency = (value: string) => {
 	const cleanedString = value.trim().replace(/\D/g, '');
@@ -9,32 +10,50 @@ const formatCurrency = (value: string) => {
 	return formattedString;
 };
 
-interface SalaryInputProps {
-	onSalaryChange?: (salary: number) => void;
-}
-
-export const SalaryInput = ({ onSalaryChange }: SalaryInputProps) => {
+export const SalaryInput = () => {
 	const { t } = useTranslation(TRANS_NS, { keyPrefix: 'salaryInput' });
-	const [salary, setSalary] = useState('150 000');
-	const salaryNumber = Number(salary.replace(/\s/g, ''));
+	const { salary, updateSalary } = useSettingsStore();
+	const inputRef = useRef<HTMLInputElement>(null);
 
-	// Уведомляем родительский компонент об изменении зарплаты
+	// Сброс значения в поле при изменении salary в store (например, при загрузке)
 	useEffect(() => {
-		onSalaryChange?.(salaryNumber);
-	}, [salaryNumber, onSalaryChange]);
+		if (inputRef.current) {
+			inputRef.current.value = salary.toLocaleString();
+		}
+	}, [salary]);
+
+	const handleCommit = () => {
+		if (inputRef.current) {
+			const formattedValue = formatCurrency(inputRef.current.value);
+			inputRef.current.value = formattedValue;
+			const numericValue = Number(formattedValue.replace(/\s/g, ''));
+			if (!isNaN(numericValue)) {
+				updateSalary(numericValue);
+			}
+		}
+	};
+
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter') {
+			handleCommit();
+			if (inputRef.current) inputRef.current.blur();
+		}
+	};
+
 	return (
 		<Card>
 			<CardHeader title={t('title')} />
 			<CardContent>
 				<Typography mb={2}>{t('description')}</Typography>
 				<TextField
+					inputRef={inputRef}
 					slotProps={{
 						input: {
 							startAdornment: <InputAdornment position="start">&#8381;</InputAdornment>,
 							endAdornment: (
 								<InputAdornment position="end">
 									{t('rubles_a_month', {
-										count: salaryNumber,
+										count: salary,
 									})}
 								</InputAdornment>
 							),
@@ -43,8 +62,9 @@ export const SalaryInput = ({ onSalaryChange }: SalaryInputProps) => {
 					inputMode="numeric"
 					placeholder="50 000"
 					autoComplete="off"
-					value={salary}
-					onChange={e => setSalary(formatCurrency(e.target.value))}
+					onBlur={handleCommit}
+					onKeyDown={handleKeyDown}
+					defaultValue={salary.toLocaleString()}
 					fullWidth
 				/>
 			</CardContent>

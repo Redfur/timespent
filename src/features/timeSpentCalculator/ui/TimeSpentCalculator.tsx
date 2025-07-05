@@ -15,10 +15,11 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
+import { useSettingsStore } from '../store/settingsStore';
 import type { SpentBy, SpentItem } from '../types';
 import { AddGroupForm } from './AddGroupForm';
 import { PeriodSelector } from './PeriodSelector';
@@ -147,8 +148,7 @@ const GroupOfSpent = ({
 export const TimeSpentCalculator = () => {
 	const { t } = useTranslation(TRANS_NS);
 	const { groups } = useGroupsStore();
-	const [salary, setSalary] = useState(50000);
-	const [workHours, setWorkHours] = useState(8);
+	const { salary, workHours, workTime } = useSettingsStore();
 
 	return (
 		<>
@@ -156,8 +156,8 @@ export const TimeSpentCalculator = () => {
 				{t('main.title')}
 			</Typography>
 			<Stack spacing={3}>
-				<WorkTimeInput onHoursChange={setWorkHours} />
-				<SalaryInput onSalaryChange={setSalary} />
+				<WorkTimeInput />
+				<SalaryInput />
 
 				<Card>
 					<CardHeader title={t('main.expensesByGroups')} />
@@ -178,7 +178,7 @@ export const TimeSpentCalculator = () => {
 					</CardContent>
 				</Card>
 
-				<WorkDayProgress salary={salary} workHours={workHours} />
+				<WorkDayProgress salary={salary} workHours={workHours} startTime={workTime.startTime} />
 			</Stack>
 		</>
 	);

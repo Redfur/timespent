@@ -1,4 +1,5 @@
 import { Box, Card, CardContent, CardHeader, Typography, useTheme } from '@mui/material';
+import type { Dayjs } from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
@@ -6,6 +7,7 @@ import { useGroupsStore } from '../store/groupsStore';
 interface WorkDayProgressProps {
 	salary: number;
 	workHours: number;
+	startTime: Dayjs;
 }
 
 interface ExpenseSegment {
@@ -14,9 +16,10 @@ interface ExpenseSegment {
 	percentage: number;
 	amount: number;
 	hours: number;
+	formattedTime: string;
 }
 
-export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => {
+export const WorkDayProgress = ({ salary, workHours, startTime }: WorkDayProgressProps) => {
 	const { t } = useTranslation(TRANS_NS);
 	const { groups } = useGroupsStore();
 	const theme = useTheme();
@@ -69,6 +72,20 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 					percentage: percentageOfSalary, // Процент от зарплаты
 					amount: expense.amount,
 					hours,
+					formattedTime: (() => {
+						// Конвертируем месячные часы в дневные
+						const dailyHours = hours / 22; // 22 рабочих дня в месяц
+						const wholeHours = Math.floor(dailyHours);
+						const minutes = Math.round((dailyHours - wholeHours) * 60);
+
+						if (wholeHours === 0) {
+							return `${minutes} мин`;
+						}
+						if (minutes === 0) {
+							return `${wholeHours} ч`;
+						}
+						return `${wholeHours} ч ${minutes} мин`;
+					})(),
 				});
 			}
 		}
@@ -95,104 +112,99 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 		<Card>
 			<CardHeader title={t('progress.title')} />
 			<CardContent>
-				<Box sx={{ mb: 3, position: 'sticky', bottom: 0, zIndex: 1000 }}>
+				<Box sx={{ mb: 3, position: 'relative' }}>
 					<Typography variant="h6" gutterBottom>
 						{t('progress.workDay')}
 					</Typography>
+
 					<Box
 						sx={{
-							height: 40,
+							display: 'grid',
+							gridTemplateColumns: 'auto 1fr',
+							gap: '12px',
+							position: 'relative',
+							backgroundColor: theme.palette.background.paper,
 							borderRadius: 2,
 							overflow: 'hidden',
-							display: 'flex',
-							border: `1px solid ${theme.palette.divider}`,
-							position: 'relative',
+							padding: '12px',
+							boxShadow: 2,
 						}}
 					>
-						{/* Сегменты расходов */}
-						{segments.map(segment => (
-							<Box
-								key={segment.groupName}
-								sx={{
-									width: `${segment.percentage}%`,
-									backgroundColor: segment.color,
-									position: 'relative',
-									'&:hover': {
-										opacity: 0.8,
-									},
-								}}
-								title={`${segment.groupName}: ${segment.hours.toFixed(1)}${t('progress.hoursShort')} (${segment.percentage.toFixed(1)}% ${t('progress.ofSalary')})`}
-							/>
-						))}
-						{/* Свободное место (если расходы меньше зарплаты) */}
-						{totalMonthlyExpenses < salary && (
-							<Box
-								sx={{
-									width: `${((salary - totalMonthlyExpenses) / salary) * 100}%`,
-									backgroundColor: theme.palette.success.main,
-									position: 'relative',
-								}}
-								title={`${t('progress.freeFunds')}: ${(salary - totalMonthlyExpenses).toLocaleString()} ₽`}
-							/>
-						)}
+						<Box>
+							{Array.from({ length: Math.ceil(workHours) + 2 }, (_, i) => {
+								const hour = startTime.hour() + i;
+								return (
+									<Box
+										key={hour}
+										sx={{
+											height: '40px',
+											fontSize: '12px',
+											fontWeight: 'bold',
+											color: theme.palette.text.secondary,
+										}}
+									>
+										{hour}:00
+									</Box>
+								);
+							})}
+						</Box>
+						<Box
+							sx={{
+								position: 'relative',
+								height: '100%',
+								width: '100%',
+								borderRadius: 2,
+								overflow: 'hidden',
+								display: 'flex',
+								flexDirection: 'column',
+							}}
+						>
+							{segments.map(segment => (
+								<Box
+									key={segment.groupName}
+									sx={{
+										height: `${segment.percentage}%`,
+										flex: '0 0 auto',
+										backgroundColor: segment.color,
+										color: '#fff',
+										display: 'flex',
+										justifyContent: 'space-between',
+										padding: 1,
+										position: 'relative',
+										cursor: 'pointer',
+										'&:hover': {
+											zIndex: 1,
+											minHeight: '40px',
+										},
+									}}
+								>
+									<Box>{segment.groupName}</Box>
+									<Box>{segment.formattedTime}</Box>
+								</Box>
+							))}
+							{totalMonthlyExpenses < salary ? (
+								<Box
+									sx={{
+										flex: '1 1 auto',
+										backgroundColor: theme.palette.mode === 'dark' ? '#222' : '#f0f0f0',
+										padding: 1,
+										position: 'relative',
+										cursor: 'pointer',
+										'&:hover': {
+											zIndex: 1,
+										},
+									}}
+								>
+									Накопления
+								</Box>
+							) : null}
+						</Box>
 					</Box>
+
 					<Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
 						{t('progress.totalHours', { hours: workHours })} •{' '}
 						{t('progress.salary', { amount: salary.toLocaleString() })}
 					</Typography>
-				</Box>
-
-				<Box>
-					<Typography variant="h6" gutterBottom>
-						{t('progress.breakdown')}
-					</Typography>
-					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-						{segments.map(segment => (
-							<Box key={segment.groupName} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-								<Box
-									sx={{
-										width: 16,
-										height: 16,
-										backgroundColor: segment.color,
-										borderRadius: '50%',
-									}}
-								/>
-								<Typography variant="body2" sx={{ flex: 1 }}>
-									{segment.groupName}
-								</Typography>
-								<Typography variant="body2" color="text.secondary">
-									{segment.hours.toFixed(1)}
-									{t('progress.hoursShort')}
-								</Typography>
-								<Typography variant="body2" color="text.secondary">
-									({segment.percentage.toFixed(1)}% {t('progress.ofSalary')})
-								</Typography>
-							</Box>
-						))}
-						{/* Показываем свободные средства, если они есть */}
-						{totalMonthlyExpenses < salary && (
-							<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-								<Box
-									sx={{
-										width: 16,
-										height: 16,
-										backgroundColor: theme.palette.success.main,
-										borderRadius: '50%',
-									}}
-								/>
-								<Typography variant="body2" sx={{ flex: 1 }}>
-									{t('progress.freeFunds')}
-								</Typography>
-								<Typography variant="body2" color="text.secondary">
-									{((salary - totalMonthlyExpenses) / (salary / (workHours * 22))).toFixed(1)}
-									{t('progress.hoursShort')}
-								</Typography>
-								<Typography variant="body2" color="text.secondary">
-									({(((salary - totalMonthlyExpenses) / salary) * 100).toFixed(1)}% {t('progress.ofSalary')})
-								</Typography>
-							</Box>
-						)}
-					</Box>
 				</Box>
 
 				<Box sx={{ mt: 3, p: 2, backgroundColor: theme.palette.action.hover, borderRadius: 1 }}>
