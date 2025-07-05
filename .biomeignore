@@ -1,0 +1,45 @@
+# Зависимости
+node_modules/
+dist/
+public/
+
+# Системные файлы
+package.json
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Конфигурационные файлы
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+biome.json
+.editorconfig
+.gitignore
+.eslintrc.*
+.prettierrc.*
+
+# Сборки и минифицированные файлы
+*.min.js
+*.min.css
+*.bundle.js
+*.bundle.css
+
+# Типы
+*.d.ts
+
+# Логи и временные файлы
+*.log
+*.tmp
+*.temp
+
+# IDE файлы
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+
+# Документация
+README.md
+CHANGELOG.md
+LICENSE 

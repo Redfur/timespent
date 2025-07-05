@@ -1,48 +1,49 @@
 {
-  "name": "rvtb",
-  "private": true,
-  "version": "0.0.1",
-  "type": "module",
-  "author": "Abdul Malik <up2dul@gmail.com>",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "lint": "biome lint .",
-    "format": "biome format --write .",
-    "check": "biome check --write .",
-    "prepare": "husky"
-  },
-  "dependencies": {
-    "@emotion/react": "^11.14.0",
-    "@emotion/styled": "^11.14.0",
-    "@fontsource/roboto": "^5.1.1",
-    "@mui/icons-material": "^6.4.4",
-    "@mui/material": "^6.4.4",
-    "@mui/x-date-pickers": "^7.26.0",
-    "dayjs": "^1.11.13",
-    "i18next": "^24.2.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-i18next": "^15.4.0",
-    "uuid": "^11.0.5",
-    "zustand": "^5.0.3"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "^1.8.1",
-    "@types/node": "^20.14.2",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
-    "@vitejs/plugin-react-swc": "^3.5.0",
-    "husky": "^9.0.11",
-    "lint-staged": "^15.2.7",
-    "typescript": "^5.2.2",
-    "vite": "^5.2.0"
-  },
-  "lint-staged": {
-    "*.{js,ts,jsx,tsx}": "biome check --write"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
+	"name": "time-spent-calculator",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"author": "Gennadiy Ivanov <redfur.dev@gmail.com>",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"lint": "biome lint .",
+		"format": "biome format --write .",
+		"check": "biome check --write .",
+		"lint-staged": "lint-staged",
+		"prepare": "husky"
+	},
+	"dependencies": {
+		"@emotion/react": "^11.14.0",
+		"@emotion/styled": "^11.14.1",
+		"@fontsource/roboto": "^5.2.6",
+		"@mui/icons-material": "^7.2.0",
+		"@mui/material": "^7.2.0",
+		"@mui/x-date-pickers": "^8.7.0",
+		"dayjs": "^1.11.13",
+		"i18next": "^25.3.1",
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"react-i18next": "^15.6.0",
+		"uuid": "^11.1.0",
+		"zustand": "^5.0.6"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.0.6",
+		"@types/node": "^24.0.10",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
+		"@vitejs/plugin-react-swc": "^3.10.2",
+		"husky": "^9.0.11",
+		"lint-staged": "^16.1.2",
+		"typescript": "^5.8.3",
+		"vite": "^7.0.2"
+	},
+	"lint-staged": {
+		"*.{js,ts,jsx,tsx}": "biome check --write"
+	},
+	"engines": {
+		"node": ">=20.19.0"
+	}
 }

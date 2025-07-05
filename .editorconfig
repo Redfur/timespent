@@ -1,0 +1,40 @@
+root = true
+
+[*]
+end_of_line = lf
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+indent_style = space
+indent_size = 4
+
+# YAML doesn't support hard tabs 🙃
+# Templates that will be weird with hard tabs in the website editor
+[{**.yml,**.md,**.rs,**.mdx,justfile,**.json}]
+indent_style = space
+
+# TypeScript/JavaScript файлы - 4 пробела
+[*.{ts,tsx,js,jsx}]
+indent_size = 4
+
+# JSON файлы - 2 пробела
+[*.json]
+indent_size = 2
+
+# Markdown файлы - 4 пробела для лучшей читаемости
+[*.md]
+indent_size = 4
+
+# YAML файлы - 2 пробела
+[*.{yml,yaml}]
+indent_size = 2
+
+# HTML файлы - 4 пробела
+[*.{html,htm}]
+indent_size = 4
+
+# CSS/SCSS файлы - 4 пробела
+[*.{css,scss,sass}]
+indent_size = 4
+
+
