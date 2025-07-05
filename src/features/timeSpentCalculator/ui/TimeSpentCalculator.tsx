@@ -15,7 +15,7 @@ import {
 	TextField,
 	Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
@@ -96,14 +96,14 @@ const GroupOfSpent = ({
 						{items.map(item => (
 							<Box key={item.id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
 								<TextField
-									placeholder="Название"
+									placeholder={t('main.expenseName')}
 									variant="standard"
 									value={item.name}
 									onChange={e => handleChangeName(item.id, e.target.value)}
 									sx={{ flex: 1 }}
 								/>
 								<TextField
-									placeholder="Сумма"
+									placeholder={t('main.expenseAmount')}
 									variant="standard"
 									onChange={e => handleChangeSpent(item.id, Number(e.target.value) || 0)}
 									slotProps={{
@@ -121,7 +121,7 @@ const GroupOfSpent = ({
 							</Box>
 						))}
 						<Button onClick={() => addSpentItem(id)} startIcon={<AddOutlined />} variant="outlined" size="small">
-							Добавить расход
+							{t('main.addExpense')}
 						</Button>
 					</Stack>
 				</CardContent>
@@ -145,6 +145,7 @@ const GroupOfSpent = ({
 };
 
 export const TimeSpentCalculator = () => {
+	const { t } = useTranslation(TRANS_NS);
 	const { groups } = useGroupsStore();
 	const [salary, setSalary] = useState(50000);
 	const [workHours, setWorkHours] = useState(8);
@@ -152,14 +153,14 @@ export const TimeSpentCalculator = () => {
 	return (
 		<>
 			<Typography variant="h3" component="h1" gutterBottom>
-				Ради чего вы работаете?
+				{t('main.title')}
 			</Typography>
 			<Stack spacing={3}>
 				<WorkTimeInput onHoursChange={setWorkHours} />
 				<SalaryInput onSalaryChange={setSalary} />
 
 				<Card>
-					<CardHeader title="Расходы по группам" />
+					<CardHeader title={t('main.expensesByGroups')} />
 					<CardContent>
 						<Stack spacing={2}>
 							{groups.map(group => (

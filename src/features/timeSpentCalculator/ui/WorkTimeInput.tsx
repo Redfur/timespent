@@ -13,7 +13,7 @@ interface WorkTimeInputProps {
 export const WorkTimeInput = ({ onHoursChange }: WorkTimeInputProps) => {
 	const { t } = useTranslation(TRANS_NS);
 	const [startTime, setStartTime] = useState<Dayjs>(dayjs().set('hour', 9).set('minute', 0));
-	const [endTime, setEndTime] = useState<Dayjs>(dayjs().set('hour', 17).set('minute', 0));
+	const [endTime, setEndTime] = useState<Dayjs>(dayjs().set('hour', 18).set('minute', 0));
 	const [lunchStartTime, setLunchStartTime] = useState<Dayjs>(dayjs().set('hour', 13).set('minute', 0));
 	const [lunchEndTime, setLunchEndTime] = useState<Dayjs>(dayjs().set('hour', 14).set('minute', 0));
 	const [includeLunch, setIncludeLunch] = useState(true);

@@ -15,7 +15,7 @@ interface SalaryInputProps {
 
 export const SalaryInput = ({ onSalaryChange }: SalaryInputProps) => {
 	const { t } = useTranslation(TRANS_NS, { keyPrefix: 'salaryInput' });
-	const [salary, setSalary] = useState('50 000');
+	const [salary, setSalary] = useState('150 000');
 	const salaryNumber = Number(salary.replace(/\s/g, ''));
 
 	// Уведомляем родительский компонент об изменении зарплаты

@@ -95,7 +95,7 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 		<Card>
 			<CardHeader title={t('progress.title')} />
 			<CardContent>
-				<Box sx={{ mb: 3 }}>
+				<Box sx={{ mb: 3, position: 'sticky', bottom: 0, zIndex: 1000 }}>
 					<Typography variant="h6" gutterBottom>
 						{t('progress.workDay')}
 					</Typography>
@@ -121,7 +121,7 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 										opacity: 0.8,
 									},
 								}}
-								title={`${segment.groupName}: ${segment.hours.toFixed(1)}ч (${segment.percentage.toFixed(1)}% от зарплаты)`}
+								title={`${segment.groupName}: ${segment.hours.toFixed(1)}${t('progress.hoursShort')} (${segment.percentage.toFixed(1)}% ${t('progress.ofSalary')})`}
 							/>
 						))}
 						{/* Свободное место (если расходы меньше зарплаты) */}
@@ -132,7 +132,7 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 									backgroundColor: theme.palette.success.main,
 									position: 'relative',
 								}}
-								title={`Свободные средства: ${(salary - totalMonthlyExpenses).toLocaleString()} ₽`}
+								title={`${t('progress.freeFunds')}: ${(salary - totalMonthlyExpenses).toLocaleString()} ₽`}
 							/>
 						)}
 					</Box>
@@ -161,10 +161,11 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 									{segment.groupName}
 								</Typography>
 								<Typography variant="body2" color="text.secondary">
-									{segment.hours.toFixed(1)}ч
+									{segment.hours.toFixed(1)}
+									{t('progress.hoursShort')}
 								</Typography>
 								<Typography variant="body2" color="text.secondary">
-									({segment.percentage.toFixed(1)}% от зарплаты)
+									({segment.percentage.toFixed(1)}% {t('progress.ofSalary')})
 								</Typography>
 							</Box>
 						))}
@@ -180,13 +181,14 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 									}}
 								/>
 								<Typography variant="body2" sx={{ flex: 1 }}>
-									Свободные средства
+									{t('progress.freeFunds')}
 								</Typography>
 								<Typography variant="body2" color="text.secondary">
-									{((salary - totalMonthlyExpenses) / (salary / (workHours * 22))).toFixed(1)}ч
+									{((salary - totalMonthlyExpenses) / (salary / (workHours * 22))).toFixed(1)}
+									{t('progress.hoursShort')}
 								</Typography>
 								<Typography variant="body2" color="text.secondary">
-									({(((salary - totalMonthlyExpenses) / salary) * 100).toFixed(1)}% от зарплаты)
+									({(((salary - totalMonthlyExpenses) / salary) * 100).toFixed(1)}% {t('progress.ofSalary')})
 								</Typography>
 							</Box>
 						)}
