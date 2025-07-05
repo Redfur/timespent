@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, CardHeader, Typography } from '@mui/material';
+import { Box, Card, CardContent, CardHeader, Typography, useTheme } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
@@ -19,6 +19,7 @@ interface ExpenseSegment {
 export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => {
 	const { t } = useTranslation(TRANS_NS);
 	const { groups } = useGroupsStore();
+	const theme = useTheme();
 
 	// Рассчитываем месячные расходы по группам
 	const calculateMonthlyExpenses = () => {
@@ -104,7 +105,7 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 							borderRadius: 2,
 							overflow: 'hidden',
 							display: 'flex',
-							border: '1px solid #e0e0e0',
+							border: `1px solid ${theme.palette.divider}`,
 							position: 'relative',
 						}}
 					>
@@ -128,7 +129,7 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 							<Box
 								sx={{
 									width: `${((salary - totalMonthlyExpenses) / salary) * 100}%`,
-									backgroundColor: '#000000',
+									backgroundColor: theme.palette.success.main,
 									position: 'relative',
 								}}
 								title={`Свободные средства: ${(salary - totalMonthlyExpenses).toLocaleString()} ₽`}
@@ -174,7 +175,7 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 									sx={{
 										width: 16,
 										height: 16,
-										backgroundColor: '#000000',
+										backgroundColor: theme.palette.success.main,
 										borderRadius: '50%',
 									}}
 								/>
@@ -192,7 +193,7 @@ export const WorkDayProgress = ({ salary, workHours }: WorkDayProgressProps) => 
 					</Box>
 				</Box>
 
-				<Box sx={{ mt: 3, p: 2, backgroundColor: '#f5f5f5', borderRadius: 1 }}>
+				<Box sx={{ mt: 3, p: 2, backgroundColor: theme.palette.action.hover, borderRadius: 1 }}>
 					<Typography variant="body2" gutterBottom>
 						<strong>{t('progress.summary')}</strong>
 					</Typography>

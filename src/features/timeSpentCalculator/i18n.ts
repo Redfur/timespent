@@ -6,6 +6,9 @@ const translations = {
 			title: 'Ваш типичный рабочий день',
 			startTime: 'Начало рабочего дня',
 			endTime: 'Конец рабочего дня',
+			includeLunch: 'Обед',
+			lunchStart: 'Начало обеда',
+			lunchEnd: 'Конец обеда',
 		},
 		salaryInput: {
 			title: 'Зарплата на руки',
@@ -57,6 +60,9 @@ const translations = {
 			title: 'Your typical work day',
 			startTime: 'Start time',
 			endTime: 'End time',
+			includeLunch: 'Include lunch time',
+			lunchStart: 'Lunch start',
+			lunchEnd: 'Lunch end',
 		},
 		salaryInput: {
 			title: 'Salary after tax',
