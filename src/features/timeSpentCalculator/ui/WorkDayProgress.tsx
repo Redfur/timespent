@@ -88,6 +88,7 @@ const useExpenseSegments = (
 	workHours: number,
 ) => {
 	const theme = useTheme();
+	const { t } = useTranslation(TRANS_NS);
 
 	return useMemo(() => {
 		const totalMonthlyExpenses = Object.values(monthlyExpenses).reduce((sum, expense) => sum + expense.amount, 0);
@@ -121,7 +122,7 @@ const useExpenseSegments = (
 			const savingsHours = savingsAmount / hourlyRate;
 
 			segments.push({
-				groupName: 'Накопления',
+				groupName: t('progress.savingsSegment'),
 				color: theme.palette.mode === 'dark' ? '#222' : '#f0f0f0',
 				percentage: (savingsAmount / salary) * 100,
 				amount: savingsAmount,
@@ -131,7 +132,7 @@ const useExpenseSegments = (
 		}
 
 		return segments;
-	}, [monthlyExpenses, salary, workHours, theme.palette.mode]);
+	}, [monthlyExpenses, salary, workHours, theme.palette.mode, t]);
 };
 
 // Компонент для отображения часов

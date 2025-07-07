@@ -54,6 +54,7 @@ const translations = {
 			freeFunds: 'Свободные средства',
 			hoursShort: 'ч',
 			freeTime: 'Свободное время',
+			savingsSegment: 'Накопления',
 		},
 		common: {
 			cancel: 'Отмена',
@@ -141,6 +142,7 @@ const translations = {
 			freeFunds: 'Free funds',
 			hoursShort: 'h',
 			freeTime: 'Free time',
+			savingsSegment: 'Savings',
 		},
 		common: {
 			cancel: 'Cancel',
