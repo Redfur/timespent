@@ -27,7 +27,7 @@ export const SalaryInput = () => {
 			const formattedValue = formatCurrency(inputRef.current.value);
 			inputRef.current.value = formattedValue;
 			const numericValue = Number(formattedValue.replace(/\s/g, ''));
-			if (!isNaN(numericValue)) {
+			if (!Number.isNaN(numericValue)) {
 				updateSalary(numericValue);
 			}
 		}

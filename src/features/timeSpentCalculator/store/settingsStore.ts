@@ -1,6 +1,7 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { createThrottledStorage } from '~/shared/lib/throttledStorage';
 
 type WorkTimeSettings = {
 	startTime: Dayjs;
@@ -86,7 +87,7 @@ export const useSettingsStore = create<SettingsState>()(
 		}),
 		{
 			name: 'timespent-settings',
-			storage: createJSONStorage(() => localStorage),
+			storage: createJSONStorage(() => createThrottledStorage(500)), // 500ms задержка
 			onRehydrateStorage: () => state => {
 				// Преобразуем строки обратно в Dayjs объекты при восстановлении
 				if (state) {

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { createThrottledStorage } from '~/shared/lib/throttledStorage';
 import { generateUUID } from '~/shared/lib/uuid';
 import { type Group, SpentBy, type SpentItem } from '../types';
 
@@ -204,7 +205,7 @@ export const useGroupsStore = create<GroupsState>()(
 		}),
 		{
 			name: 'timespent-groups',
-			storage: createJSONStorage(() => localStorage),
+			storage: createJSONStorage(() => createThrottledStorage(500)), // 500ms задержка
 			onRehydrateStorage: () => state => {
 				// Если нет сохраненных групп, создаем группы по умолчанию
 				if (state && state.groups.length === 0) {
@@ -239,7 +240,7 @@ export const useGroupsStore = create<GroupsState>()(
 								'groups.transport.description':
 									'Как вы обычно добираетесь до работы? А за покупками? Если пользуетесь своей машиной, не забудьте добавить расходы на страховку, ТО и ремонт.',
 								'groups.food.description':
-									'Все, что попадает из пункта А (магазин) в пункт Б (к столу) через пункт В (кухня). А также утренний кофе по дороге на работу, обеды в кафе и еда с доставкой.',
+									'Все, что попадает из пункта А (магазин) в пункт Б (стол) через пункт В (кухня). А также утренний кофе по дороге на работу, обеды в кафе и еда с доставкой.',
 								'groups.subscriptions.description':
 									'Все цифровые и физические подписки: стриминги, облачные сервисы, журналы, фитнес-клубы и другие регулярные платежи.',
 								'groups.entertainment.description':
