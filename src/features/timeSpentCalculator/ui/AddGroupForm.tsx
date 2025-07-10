@@ -1,9 +1,12 @@
-import { Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { generateUUID } from '@/shared/lib/uuid';
 import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
+import { Textarea } from '@/shared/ui/textarea';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
 import { type Group, SpentBy } from '../types';
@@ -63,45 +66,52 @@ export const AddGroupForm = () => {
 			<Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
 				<DialogTitle>{t('addGroup.title')}</DialogTitle>
 				<DialogContent>
-					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-						<TextField
-							label={t('addGroup.name')}
-							value={formData.name}
-							onChange={e => setFormData({ ...formData, name: e.target.value })}
-							fullWidth
-							required
-						/>
-						<TextField
-							label={t('addGroup.description')}
-							value={formData.description}
-							onChange={e => setFormData({ ...formData, description: e.target.value })}
-							fullWidth
-							multiline
-							rows={3}
-						/>
-						<Box>
-							<Box sx={{ mb: 1 }}>{t('addGroup.color')}</Box>
-							<Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+					<div className="space-y-4 mt-4">
+						<div className="space-y-2">
+							<Label htmlFor="group-name">{t('addGroup.name')}</Label>
+							<Input
+								id="group-name"
+								value={formData.name}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+									setFormData({ ...formData, name: e.target.value })
+								}
+								required
+							/>
+						</div>
+						<div className="space-y-2">
+							<Label htmlFor="group-description">{t('addGroup.description')}</Label>
+							<Textarea
+								id="group-description"
+								value={formData.description}
+								onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+									setFormData({ ...formData, description: e.target.value })
+								}
+								rows={3}
+							/>
+						</div>
+						<div>
+							<div className="mb-2">{t('addGroup.color')}</div>
+							<div className="flex gap-2 flex-wrap">
 								{COLORS.map(color => (
-									<Box
-										key={color}
-										sx={{
-											width: 32,
-											height: 32,
-											backgroundColor: color,
-											borderRadius: '50%',
-											cursor: 'pointer',
-											border: formData.color === color ? '3px solid #000' : '1px solid #ccc',
-											'&:hover': {
-												border: '2px solid #000',
-											},
+									<div
+										role="button"
+										tabIndex={0}
+										onKeyDown={e => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												setFormData({ ...formData, color });
+											}
 										}}
+										key={color}
+										className={`w-8 h-8 rounded-full cursor-pointer border-2 ${
+											formData.color === color ? 'border-black' : 'border-gray-300'
+										} hover:border-black`}
+										style={{ backgroundColor: color }}
 										onClick={() => setFormData({ ...formData, color })}
 									/>
 								))}
-							</Box>
-						</Box>
-					</Box>
+							</div>
+						</div>
+					</div>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => setOpen(false)}>{t('common.cancel')}</Button>

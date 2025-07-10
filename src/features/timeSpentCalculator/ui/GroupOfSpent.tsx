@@ -7,15 +7,13 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	InputAdornment,
-	Stack,
-	TextField,
 	Typography,
 } from '@mui/material';
-import { Plus, Trash } from 'lucide-react';
+import { Plus, RussianRuble, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
 import type { SpentBy, SpentItem } from '../types';
@@ -83,39 +81,37 @@ export const GroupOfSpent = ({ id, color, name, description, items }: GroupOfSpe
 					<Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
 						{description}
 					</Typography>
-					<Stack spacing={2}>
+					<div className="space-y-4">
 						{items.map(item => (
-							<Box key={item.id} sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-								<TextField
+							<div key={item.id} className="flex items-center gap-4">
+								<Input
 									placeholder={t('main.expenseName')}
-									variant="standard"
 									value={item.name}
-									onChange={e => handleChangeName(item.id, e.target.value)}
-									sx={{ flex: 1 }}
+									onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChangeName(item.id, e.target.value)}
+									className="flex-1"
 								/>
-								<TextField
-									placeholder={t('main.expenseAmount')}
-									variant="standard"
-									onChange={e => handleChangeSpent(item.id, Number(e.target.value) || 0)}
-									slotProps={{
-										input: {
-											startAdornment: <InputAdornment position="start">&#8381;</InputAdornment>,
-										},
-									}}
-									value={item.spent}
-									sx={{ width: 150 }}
-								/>
+								<div className="relative w-40">
+									<RussianRuble className="absolute left-2 top-1/2 size-4 transform -translate-y-1/2 pointer-events-none" />
+									<Input
+										placeholder={t('main.expenseAmount')}
+										onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+											handleChangeSpent(item.id, Number(e.target.value) || 0)
+										}
+										value={item.spent}
+										className="pl-8"
+									/>
+								</div>
 								<PeriodSelector value={item.spentBy} onChange={period => handleChangePeriod(item.id, period)} />
 								<Button onClick={() => removeSpentItem(id, item.id)} size="icon" variant="destructive">
 									<Trash />
 								</Button>
-							</Box>
+							</div>
 						))}
 						<Button onClick={() => addSpentItem(id)} variant="outline" size="sm">
 							<Plus />
 							{t('main.addExpense')}
 						</Button>
-					</Stack>
+					</div>
 				</CardContent>
 			</Card>
 
