@@ -1,8 +1,9 @@
-import { Box, Card, CardContent, CardHeader, FormControlLabel, Switch } from '@mui/material';
-import { TimeField } from '@mui/x-date-pickers';
+import { Card, CardContent, CardHeader, FormControlLabel, Switch } from '@mui/material';
 import type { Dayjs } from 'dayjs';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Input } from '@/shared/ui/input';
+import { Label } from '@/shared/ui/label';
 import { TRANS_NS } from '../i18n';
 import { useSettingsStore } from '../store/settingsStore';
 
@@ -65,30 +66,46 @@ export const WorkTimeInput = () => {
 				}
 			/>
 			<CardContent>
-				<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+				<div className="space-y-4">
 					{/* Рабочее время */}
-					<Box sx={{ display: 'flex', gap: 2 }}>
-						<TimeField
-							label={t('workTimeInput.startTime')}
-							format="HH:mm"
-							maxTime={endTimeRef.current}
-							defaultValue={workTime.startTime}
-							fullWidth
-							onChange={handleStartTimeChange}
-							onBlur={handleCommit}
-							onKeyDown={handleTimeKeyDown}
-						/>
-						<TimeField
-							label={t('workTimeInput.endTime')}
-							format="HH:mm"
-							minTime={startTimeRef.current}
-							defaultValue={workTime.endTime}
-							fullWidth
-							onChange={handleEndTimeChange}
-							onBlur={handleCommit}
-							onKeyDown={handleTimeKeyDown}
-						/>
-					</Box>
+					<div className="flex gap-4">
+						<div className="space-y-2 flex-1">
+							<Label htmlFor="start-time">{t('workTimeInput.startTime')}</Label>
+							<Input
+								id="start-time"
+								type="time"
+								defaultValue={workTime.startTime.format('HH:mm')}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+									const time = e.target.value;
+									if (time) {
+										const [hours, minutes] = time.split(':');
+										const newTime = workTime.startTime.hour(Number.parseInt(hours)).minute(Number.parseInt(minutes));
+										handleStartTimeChange(newTime);
+									}
+								}}
+								onBlur={handleCommit}
+								onKeyDown={handleTimeKeyDown}
+							/>
+						</div>
+						<div className="space-y-2 flex-1">
+							<Label htmlFor="end-time">{t('workTimeInput.endTime')}</Label>
+							<Input
+								id="end-time"
+								type="time"
+								defaultValue={workTime.endTime.format('HH:mm')}
+								onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+									const time = e.target.value;
+									if (time) {
+										const [hours, minutes] = time.split(':');
+										const newTime = workTime.endTime.hour(Number.parseInt(hours)).minute(Number.parseInt(minutes));
+										handleEndTimeChange(newTime);
+									}
+								}}
+								onBlur={handleCommit}
+								onKeyDown={handleTimeKeyDown}
+							/>
+						</div>
+					</div>
 
 					{/* Переключатель времени обеда */}
 					<FormControlLabel
@@ -103,30 +120,50 @@ export const WorkTimeInput = () => {
 
 					{/* Время обеда */}
 					{workTime.includeLunch && (
-						<Box sx={{ display: 'flex', gap: 2 }}>
-							<TimeField
-								label={t('workTimeInput.lunchStart')}
-								format="HH:mm"
-								maxTime={lunchEndTimeRef.current}
-								defaultValue={workTime.lunchStartTime}
-								fullWidth
-								onChange={handleLunchStartTimeChange}
-								onBlur={handleCommit}
-								onKeyDown={handleTimeKeyDown}
-							/>
-							<TimeField
-								label={t('workTimeInput.lunchEnd')}
-								format="HH:mm"
-								minTime={lunchStartTimeRef.current}
-								defaultValue={workTime.lunchEndTime}
-								fullWidth
-								onChange={handleLunchEndTimeChange}
-								onBlur={handleCommit}
-								onKeyDown={handleTimeKeyDown}
-							/>
-						</Box>
+						<div className="flex gap-4">
+							<div className="space-y-2 flex-1">
+								<Label htmlFor="lunch-start">{t('workTimeInput.lunchStart')}</Label>
+								<Input
+									id="lunch-start"
+									type="time"
+									defaultValue={workTime.lunchStartTime.format('HH:mm')}
+									onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+										const time = e.target.value;
+										if (time) {
+											const [hours, minutes] = time.split(':');
+											const newTime = workTime.lunchStartTime
+												.hour(Number.parseInt(hours))
+												.minute(Number.parseInt(minutes));
+											handleLunchStartTimeChange(newTime);
+										}
+									}}
+									onBlur={handleCommit}
+									onKeyDown={handleTimeKeyDown}
+								/>
+							</div>
+							<div className="space-y-2 flex-1">
+								<Label htmlFor="lunch-end">{t('workTimeInput.lunchEnd')}</Label>
+								<Input
+									id="lunch-end"
+									type="time"
+									defaultValue={workTime.lunchEndTime.format('HH:mm')}
+									onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+										const time = e.target.value;
+										if (time) {
+											const [hours, minutes] = time.split(':');
+											const newTime = workTime.lunchEndTime
+												.hour(Number.parseInt(hours))
+												.minute(Number.parseInt(minutes));
+											handleLunchEndTimeChange(newTime);
+										}
+									}}
+									onBlur={handleCommit}
+									onKeyDown={handleTimeKeyDown}
+								/>
+							</div>
+						</div>
 					)}
-				</Box>
+				</div>
 			</CardContent>
 		</Card>
 	);
