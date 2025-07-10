@@ -1,7 +1,7 @@
-import { FormControl, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGE_STORAGE_KEY } from '@/shared/lib/i18n';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { TRANS_NS } from '../i18n';
 
 const languages = [
@@ -20,22 +20,24 @@ export const LanguageChange = () => {
 		}
 	}, [i18n]);
 
-	const handleLanguageChange = (event: SelectChangeEvent<string>) => {
-		const newLanguage = event.target.value;
+	const handleLanguageChange = (newLanguage: string) => {
 		i18n.changeLanguage(newLanguage);
 		// Сохраняем выбранный язык в localStorage
 		localStorage.setItem(LANGUAGE_STORAGE_KEY, newLanguage);
 	};
 
 	return (
-		<FormControl variant="outlined" size="small" sx={{ minWidth: 120 }}>
-			<Select value={i18n.language} onChange={handleLanguageChange} label={t('label')}>
+		<Select value={i18n.language} onValueChange={handleLanguageChange}>
+			<SelectTrigger className="w-32">
+				<SelectValue placeholder={t('label')} />
+			</SelectTrigger>
+			<SelectContent>
 				{languages.map(lang => (
-					<MenuItem key={lang.code} value={lang.code}>
+					<SelectItem key={lang.code} value={lang.code}>
 						{lang.name}
-					</MenuItem>
+					</SelectItem>
 				))}
-			</Select>
-		</FormControl>
+			</SelectContent>
+		</Select>
 	);
 };

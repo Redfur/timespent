@@ -40,7 +40,6 @@ const translations = {
 		},
 		progress: {
 			title: 'Ваш рабочий день',
-			workDay: 'Рабочий день',
 			breakdown: 'Разбивка по группам',
 			summary: 'Итого',
 			noExpenses: 'Добавьте расходы, чтобы увидеть результаты',
@@ -107,9 +106,9 @@ const translations = {
 		},
 		periods: {
 			label: 'Period',
-			day: 'per day',
-			month: 'per month',
-			year: 'per year',
+			day: 'a day',
+			month: 'a month',
+			year: 'a year',
 		},
 		addGroup: {
 			button: 'Add group',
@@ -128,7 +127,6 @@ const translations = {
 		},
 		progress: {
 			title: 'Your work day',
-			workDay: 'Work day',
 			breakdown: 'Breakdown by groups',
 			summary: 'Summary',
 			noExpenses: 'Add expenses to see results',

@@ -1,9 +1,9 @@
-import { Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { generateUUID } from '@/shared/lib/uuid';
 import { Button } from '@/shared/ui/button';
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/shared/ui/dialog';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Textarea } from '@/shared/ui/textarea';
@@ -63,10 +63,12 @@ export const AddGroupForm = () => {
 				{t('addGroup.button')}
 			</Button>
 
-			<Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
-				<DialogTitle>{t('addGroup.title')}</DialogTitle>
-				<DialogContent>
-					<div className="space-y-4 mt-4">
+			<Dialog open={open} onOpenChange={setOpen}>
+				<DialogContent className="sm:max-w-md">
+					<DialogHeader>
+						<DialogTitle>{t('addGroup.title')}</DialogTitle>
+					</DialogHeader>
+					<div className="space-y-4">
 						<div className="space-y-2">
 							<Label htmlFor="group-name">{t('addGroup.name')}</Label>
 							<Input
@@ -112,13 +114,15 @@ export const AddGroupForm = () => {
 							</div>
 						</div>
 					</div>
+					<DialogFooter>
+						<Button onClick={() => setOpen(false)} variant="outline">
+							{t('common.cancel')}
+						</Button>
+						<Button onClick={handleSubmit} disabled={!formData.name.trim()}>
+							{t('addGroup.add')}
+						</Button>
+					</DialogFooter>
 				</DialogContent>
-				<DialogActions>
-					<Button onClick={() => setOpen(false)}>{t('common.cancel')}</Button>
-					<Button onClick={handleSubmit} variant="default" disabled={!formData.name.trim()}>
-						{t('addGroup.add')}
-					</Button>
-				</DialogActions>
 			</Dialog>
 		</>
 	);

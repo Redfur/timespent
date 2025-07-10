@@ -1,14 +1,13 @@
-import { Box, Container } from '@mui/material';
 import { SettingsSidebar } from '@/features/settingsSidebar/ui/SettingsSidebar';
 import { TimeSpentCalculator } from '@/features/timeSpentCalculator';
 
 export const MainPage = () => {
 	return (
-		<Container maxWidth="md">
-			<Box sx={{ position: 'fixed', top: 8, right: 8 }}>
+		<div className="max-w-2xl mx-auto pt-16 pb-16">
+			<div className="fixed top-8 right-8">
 				<SettingsSidebar />
-			</Box>
+			</div>
 			<TimeSpentCalculator />
-		</Container>
+		</div>
 	);
 };

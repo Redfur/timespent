@@ -1,5 +1,6 @@
-import { Card, CardContent, CardHeader, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Typography } from '@/shared/ui/typography';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
 import { useSettingsStore } from '../store/settingsStore';
@@ -16,17 +17,19 @@ export const TimeSpentCalculator = () => {
 
 	return (
 		<>
-			<Typography variant="h3" component="h1" marginTop={16} marginBottom={8}>
+			<Typography variant="h3" component="h1" className="mb-8">
 				{t('main.title')}
 			</Typography>
-			<Stack spacing={3}>
+			<div className="space-y-4">
 				<WorkTimeInput />
 				<SalaryInput />
 
-				<Card>
-					<CardHeader title={t('main.expensesByGroups')} />
+				<Card className="gap-4">
+					<CardHeader>
+						<CardTitle>{t('main.expensesByGroups')}</CardTitle>
+					</CardHeader>
 					<CardContent>
-						<Stack spacing={2}>
+						<div className="space-y-2">
 							{groups.map(group => (
 								<GroupOfSpent
 									key={group.id}
@@ -38,12 +41,12 @@ export const TimeSpentCalculator = () => {
 								/>
 							))}
 							<AddGroupForm />
-						</Stack>
+						</div>
 					</CardContent>
 				</Card>
 
 				<WorkDayProgress salary={salary} workTime={workTime} workHours={workHours} />
-			</Stack>
+			</div>
 		</>
 	);
 };

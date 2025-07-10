@@ -1,7 +1,9 @@
-import { Box, Card, CardContent, CardHeader, Typography, useTheme } from '@mui/material';
 import type { Dayjs } from 'dayjs';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useTheme } from '@/app/providers/ThemeProvider';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
+import { Typography } from '@/shared/ui/typography';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
 import type { SpentBy } from '../types';
@@ -87,7 +89,7 @@ const useExpenseSegments = (
 	salary: number,
 	workHours: number,
 ) => {
-	const theme = useTheme();
+	const { theme } = useTheme();
 	const { t } = useTranslation(TRANS_NS);
 
 	return useMemo(() => {
@@ -123,7 +125,7 @@ const useExpenseSegments = (
 
 			segments.push({
 				groupName: t('progress.savingsSegment'),
-				color: theme.palette.mode === 'dark' ? '#222' : '#f0f0f0',
+				color: theme === 'dark' ? '#222' : '#666',
 				percentage: (savingsAmount / salary) * 100,
 				amount: savingsAmount,
 				hours: savingsHours,
@@ -132,75 +134,44 @@ const useExpenseSegments = (
 		}
 
 		return segments;
-	}, [monthlyExpenses, salary, workHours, theme.palette.mode, t]);
+	}, [monthlyExpenses, salary, workHours, theme, t]);
 };
 
 // Компонент для отображения часов
 const TimeLabels = ({ workHours, startTime }: { workHours: number; startTime: Dayjs }) => {
-	const theme = useTheme();
-
 	return (
-		<Box>
+		<div>
 			{Array.from({ length: Math.ceil(workHours) + 2 }, (_, i) => {
 				const hour = startTime.hour() + i;
 				return (
-					<Box
-						key={hour}
-						sx={{
-							height: '40px',
-							fontSize: '12px',
-							fontWeight: 'bold',
-							color: theme.palette.text.secondary,
-						}}
-					>
+					<div key={hour} className="h-10 text-sm font-bold text-muted-foreground">
 						{hour}:00
-					</Box>
+					</div>
 				);
 			})}
-		</Box>
+		</div>
 	);
 };
 
 // Компонент для отображения сегментов
 const ProgressSegments = ({ segments }: { segments: ExpenseSegment[] }) => {
 	return (
-		<Box
-			sx={{
-				position: 'relative',
-				height: '100%',
-				width: '100%',
-				fontSize: '12px',
-				borderRadius: 2,
-				overflow: 'hidden',
-				display: 'flex',
-				flexDirection: 'column',
-			}}
-		>
+		<div className="relative h-full w-full text-sm rounded-md overflow-hidden flex flex-col">
 			{segments.map(segment => (
-				<Box
+				<div
 					key={segment.groupName}
-					sx={{
+					className="flex justify-between items-start p-1 text-xs text-white dark:text-dark"
+					style={{
+						backgroundColor: segment.color,
 						height: `${segment.percentage}%`,
 						flex: '0 0 auto',
-						backgroundColor: segment.color,
-						color: '#fff',
-						display: 'flex',
-						justifyContent: 'space-between',
-						alignItems: 'flex-start',
-						padding: 1,
-						position: 'relative',
-						cursor: 'pointer',
-						'&:hover': {
-							zIndex: 1,
-							minHeight: '32px',
-						},
 					}}
 				>
-					<Box>{segment.groupName}</Box>
-					<Box>{segment.formattedTime}</Box>
-				</Box>
+					<div>{segment.groupName}</div>
+					<div>{segment.formattedTime}</div>
+				</div>
 			))}
-		</Box>
+		</div>
 	);
 };
 
@@ -215,46 +186,47 @@ const SummarySection = ({
 	workHours: number;
 }) => {
 	const { t } = useTranslation(TRANS_NS);
-	const theme = useTheme();
 
 	const hourlyRate = salary / (workHours * WORK_DAYS_PER_MONTH);
 	const workTimeForExpenses = totalMonthlyExpenses / hourlyRate;
 	const savingsAmount = salary - totalMonthlyExpenses;
 	const savingsHours = savingsAmount / hourlyRate;
 
+	// TODO: переделать на Card
 	return (
-		<Box sx={{ mt: 3, p: 2, backgroundColor: theme.palette.action.hover, borderRadius: 1 }}>
-			<Typography variant="body2" gutterBottom>
-				<strong>{t('progress.summary')}</strong>
-			</Typography>
-			<Typography variant="body2" color="text.secondary">
-				{t('progress.monthlyExpenses', { amount: totalMonthlyExpenses.toLocaleString() })}
-			</Typography>
-			<Typography variant="body2" color="text.secondary">
-				{t('progress.expensesPercentage', {
-					percentage: ((totalMonthlyExpenses / salary) * 100).toFixed(1),
-				})}
-			</Typography>
-			<Typography variant="body2" color="text.secondary">
-				{t('progress.workTimeForExpenses', {
-					hours: workTimeForExpenses.toFixed(1),
-				})}
-			</Typography>
-			{totalMonthlyExpenses < salary && (
-				<Typography variant="body2" color="success.main">
-					{t('progress.savings', {
-						amount: savingsAmount.toLocaleString(),
-						hours: savingsHours.toFixed(1),
+		<Card className="gap-2">
+			<CardHeader>
+				<CardTitle>{t('progress.summary')}</CardTitle>
+			</CardHeader>
+			<CardContent>
+				<Typography variant="body2" color="secondary">
+					{t('progress.monthlyExpenses', { amount: totalMonthlyExpenses.toLocaleString() })}
+				</Typography>
+				<Typography variant="body2" color="secondary">
+					{t('progress.expensesPercentage', {
+						percentage: ((totalMonthlyExpenses / salary) * 100).toFixed(1),
 					})}
 				</Typography>
-			)}
-		</Box>
+				<Typography variant="body2" color="secondary">
+					{t('progress.workTimeForExpenses', {
+						hours: workTimeForExpenses.toFixed(1),
+					})}
+				</Typography>
+				{totalMonthlyExpenses < salary && (
+					<Typography variant="body2" color="success">
+						{t('progress.savings', {
+							amount: savingsAmount.toLocaleString(),
+							hours: savingsHours.toFixed(1),
+						})}
+					</Typography>
+				)}
+			</CardContent>
+		</Card>
 	);
 };
 
 export const WorkDayProgress = ({ salary, workTime, workHours }: WorkDayProgressProps) => {
 	const { t } = useTranslation(TRANS_NS);
-	const theme = useTheme();
 
 	const monthlyExpenses = useMonthlyExpenses();
 	const segments = useExpenseSegments(monthlyExpenses, salary, workHours);
@@ -263,9 +235,11 @@ export const WorkDayProgress = ({ salary, workTime, workHours }: WorkDayProgress
 	if (segments.length === 0) {
 		return (
 			<Card>
-				<CardHeader title={t('progress.title')} />
+				<CardHeader>
+					<CardTitle>{t('progress.title')}</CardTitle>
+				</CardHeader>
 				<CardContent>
-					<Typography variant="body2" color="text.secondary">
+					<Typography variant="body2" color="secondary">
 						{t('progress.noExpenses')}
 					</Typography>
 				</CardContent>
@@ -274,39 +248,26 @@ export const WorkDayProgress = ({ salary, workTime, workHours }: WorkDayProgress
 	}
 
 	return (
-		<Card>
-			<CardHeader title={t('progress.title')} />
-			<CardContent>
-				<Box sx={{ mb: 3, position: 'relative' }}>
-					<Typography variant="h6" gutterBottom>
-						{t('progress.workDay')}
-					</Typography>
+		<>
+			<Card>
+				<CardHeader>
+					<CardTitle>{t('progress.title')}</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div className="relative">
+						<div className="grid grid-cols-[auto_1fr] gap-3 relative overflow-hidden">
+							<TimeLabels workHours={workHours} startTime={workTime.startTime} />
+							<ProgressSegments segments={segments} />
+						</div>
 
-					<Box
-						sx={{
-							display: 'grid',
-							gridTemplateColumns: 'auto 1fr',
-							gap: '12px',
-							position: 'relative',
-							backgroundColor: theme.palette.background.paper,
-							borderRadius: 2,
-							overflow: 'hidden',
-							padding: '12px',
-							boxShadow: 2,
-						}}
-					>
-						<TimeLabels workHours={workHours} startTime={workTime.startTime} />
-						<ProgressSegments segments={segments} />
-					</Box>
-
-					<Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-						{t('progress.totalHours', { hours: workHours })} •{' '}
-						{t('progress.salary', { amount: salary.toLocaleString() })}
-					</Typography>
-				</Box>
-
-				<SummarySection salary={salary} totalMonthlyExpenses={totalMonthlyExpenses} workHours={workHours} />
-			</CardContent>
-		</Card>
+						<Typography variant="caption" color="secondary" className="mt-1 block">
+							{t('progress.totalHours', { hours: workHours })}
+							{/* {t('progress.salary', { amount: salary.toLocaleString() })} */}
+						</Typography>
+					</div>
+				</CardContent>
+			</Card>
+			<SummarySection salary={salary} totalMonthlyExpenses={totalMonthlyExpenses} workHours={workHours} />
+		</>
 	);
 };

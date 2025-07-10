@@ -1,9 +1,10 @@
-import { Card, CardContent, CardHeader, FormControlLabel, Switch } from '@mui/material';
 import type { Dayjs } from 'dayjs';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
+import { Switch } from '@/shared/ui/switch';
 import { TRANS_NS } from '../i18n';
 import { useSettingsStore } from '../store/settingsStore';
 
@@ -55,16 +56,16 @@ export const WorkTimeInput = () => {
 
 	return (
 		<Card>
-			<CardHeader
-				title={
-					workHours > 0
+			<CardHeader>
+				<CardTitle>
+					{workHours > 0
 						? `${t('workTimeInput.title')} - ${t('hours', {
 								count: workHours,
 								ns: 'common',
 							})}`
-						: t('workTimeInput.title')
-				}
-			/>
+						: t('workTimeInput.title')}
+				</CardTitle>
+			</CardHeader>
 			<CardContent>
 				<div className="space-y-4">
 					{/* Рабочее время */}
@@ -108,15 +109,13 @@ export const WorkTimeInput = () => {
 					</div>
 
 					{/* Переключатель времени обеда */}
-					<FormControlLabel
-						control={
-							<Switch
-								checked={workTime.includeLunch}
-								onChange={e => updateWorkTime({ includeLunch: e.target.checked })}
-							/>
-						}
-						label={t('workTimeInput.includeLunch')}
-					/>
+					<Label className="flex items-center gap-2">
+						<Switch
+							checked={workTime.includeLunch}
+							onCheckedChange={checked => updateWorkTime({ includeLunch: checked })}
+						/>
+						{t('workTimeInput.includeLunch')}
+					</Label>
 
 					{/* Время обеда */}
 					{workTime.includeLunch && (

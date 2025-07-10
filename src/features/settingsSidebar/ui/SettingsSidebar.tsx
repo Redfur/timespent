@@ -1,46 +1,42 @@
-import { Box, Container, Drawer, Typography } from '@mui/material';
 import { Menu } from 'lucide-react';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { Button } from '@/shared/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/shared/ui/sheet';
 import { LanguageChange } from '@/widgets/languageChange';
 import { ThemeChange } from '@/widgets/themeChange';
 import { TRANS_NS } from '../i18n';
 
 export const SettingsSidebar = () => {
-	const [open, setOpen] = useState(false);
 	const { t } = useTranslation(TRANS_NS);
 
 	return (
-		<>
-			<Button onClick={() => setOpen(true)}>
-				<Menu />
-				{t('title')}
-			</Button>
-			<Drawer keepMounted={false} open={open} onClose={() => setOpen(false)} anchor="right">
-				<Box sx={{ width: 300 }}>
-					<Container>
-						<Typography variant="h5" gutterBottom>
-							{t('title')}
-						</Typography>
+		<Sheet>
+			<SheetTrigger asChild>
+				<Button>
+					<Menu />
+					{t('title')}
+				</Button>
+			</SheetTrigger>
+			<SheetContent side="right" className="w-80">
+				<SheetHeader>
+					<SheetTitle>{t('title')}</SheetTitle>
+				</SheetHeader>
 
-						<Box sx={{ mb: 3 }}>
-							<Typography variant="h6" gutterBottom>
-								{t('theme')}
-							</Typography>
+				<SheetDescription>
+					<div className="space-y-6 px-4">
+						<div className="space-y-2">
+							<h3 className="text-md font-semibold">{t('theme')}</h3>
 							<ThemeChange />
-						</Box>
+						</div>
 
-						<Box sx={{ mb: 3 }}>
-							<Typography variant="h6" gutterBottom>
-								{t('language')}
-							</Typography>
+						<div className="space-y-2">
+							<h3 className="text-md font-semibold">{t('language')}</h3>
 							<LanguageChange />
-						</Box>
-					</Container>
-				</Box>
-			</Drawer>
-		</>
+						</div>
+					</div>
+				</SheetDescription>
+			</SheetContent>
+		</Sheet>
 	);
 };

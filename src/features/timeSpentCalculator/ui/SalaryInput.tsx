@@ -1,9 +1,10 @@
-import { Card, CardContent, CardHeader, Typography } from '@mui/material';
 import { RussianRuble } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
+import { Typography } from '@/shared/ui/typography';
 import { TRANS_NS } from '../i18n';
 import { useSettingsStore } from '../store/settingsStore';
 
@@ -44,10 +45,12 @@ export const SalaryInput = () => {
 	};
 
 	return (
-		<Card>
-			<CardHeader title={t('title')} />
+		<Card className="gap-2">
+			<CardHeader>
+				<CardTitle>{t('title')}</CardTitle>
+			</CardHeader>
 			<CardContent>
-				<Typography mb={2}>{t('description')}</Typography>
+				<Typography className="mb-2">{t('description')}</Typography>
 				<div className="space-y-2">
 					<Label htmlFor="salary">{t('title')}</Label>
 					<div className="relative">

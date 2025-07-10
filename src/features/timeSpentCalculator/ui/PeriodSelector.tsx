@@ -1,5 +1,5 @@
-import { FormControl, MenuItem, Select } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 import { TRANS_NS } from '../i18n';
 import { SpentBy } from '../types';
 
@@ -19,14 +19,17 @@ export const PeriodSelector = ({ value, onChange, label }: PeriodSelectorProps) 
 	];
 
 	return (
-		<FormControl variant="standard" size="small" sx={{ minWidth: 120 }}>
-			<Select value={value} onChange={e => onChange(e.target.value as SpentBy)} label={label || t('periods.label')}>
+		<Select value={value} onValueChange={newValue => onChange(newValue as SpentBy)}>
+			<SelectTrigger className="w-26">
+				<SelectValue placeholder={label || t('periods.label')} />
+			</SelectTrigger>
+			<SelectContent>
 				{periods.map(period => (
-					<MenuItem key={period.value} value={period.value}>
+					<SelectItem key={period.value} value={period.value}>
 						{period.label}
-					</MenuItem>
+					</SelectItem>
 				))}
-			</Select>
-		</FormControl>
+			</SelectContent>
+		</Select>
 	);
 };
