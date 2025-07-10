@@ -1,7 +1,7 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import enTranslation from '~/shared/lib/i18n/locales/en';
-import ruTranslation from '~/shared/lib/i18n/locales/ru';
+import enTranslation from '@/shared/lib/i18n/locales/en';
+import ruTranslation from '@/shared/lib/i18n/locales/ru';
 
 const LANGUAGE_STORAGE_KEY = 'timespent-language';
 

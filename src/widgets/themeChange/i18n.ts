@@ -1,4 +1,4 @@
-import { injectTranslation } from '~/shared/lib/i18n';
+import { injectTranslation } from '@/shared/lib/i18n';
 
 const translations = {
 	ru: {

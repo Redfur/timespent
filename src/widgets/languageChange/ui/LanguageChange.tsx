@@ -1,7 +1,7 @@
 import { FormControl, MenuItem, Select, type SelectChangeEvent } from '@mui/material';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LANGUAGE_STORAGE_KEY } from '~/shared/lib/i18n';
+import { LANGUAGE_STORAGE_KEY } from '@/shared/lib/i18n';
 import { TRANS_NS } from '../i18n';
 
 const languages = [

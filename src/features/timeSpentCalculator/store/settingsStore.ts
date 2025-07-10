@@ -1,7 +1,7 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { createThrottledStorage } from '~/shared/lib/throttledStorage';
+import { createThrottledStorage } from '@/shared/lib/throttledStorage';
 
 type WorkTimeSettings = {
 	startTime: Dayjs;

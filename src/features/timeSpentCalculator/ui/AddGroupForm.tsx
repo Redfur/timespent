@@ -1,8 +1,9 @@
-import { AddOutlined } from '@mui/icons-material';
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Box, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Plus } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { generateUUID } from '~/shared/lib/uuid';
+import { generateUUID } from '@/shared/lib/uuid';
+import { Button } from '@/shared/ui/button';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
 import { type Group, SpentBy } from '../types';
@@ -54,7 +55,8 @@ export const AddGroupForm = () => {
 
 	return (
 		<>
-			<Button variant="outlined" startIcon={<AddOutlined />} onClick={() => setOpen(true)} sx={{ mt: 2 }}>
+			<Button variant="outline" onClick={() => setOpen(true)}>
+				<Plus />
 				{t('addGroup.button')}
 			</Button>
 
@@ -103,7 +105,7 @@ export const AddGroupForm = () => {
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => setOpen(false)}>{t('common.cancel')}</Button>
-					<Button onClick={handleSubmit} variant="contained" disabled={!formData.name.trim()}>
+					<Button onClick={handleSubmit} variant="default" disabled={!formData.name.trim()}>
 						{t('addGroup.add')}
 					</Button>
 				</DialogActions>

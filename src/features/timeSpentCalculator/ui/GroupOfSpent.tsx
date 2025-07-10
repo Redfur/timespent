@@ -1,7 +1,5 @@
-import { AddOutlined, Delete } from '@mui/icons-material';
 import {
 	Box,
-	Button,
 	Card,
 	CardContent,
 	CardHeader,
@@ -9,14 +7,15 @@ import {
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	IconButton,
 	InputAdornment,
 	Stack,
 	TextField,
 	Typography,
 } from '@mui/material';
+import { Plus, Trash } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/shared/ui/button';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
 import type { SpentBy, SpentItem } from '../types';
@@ -70,14 +69,14 @@ export const GroupOfSpent = ({ id, color, name, description, items }: GroupOfSpe
 						</Box>
 					}
 					action={
-						<IconButton
+						<Button
 							onClick={() => setShowDeleteDialog(true)}
-							size="small"
-							color="error"
+							size="icon"
+							variant="destructive"
 							title={t('deleteGroup.button')}
 						>
-							<Delete />
-						</IconButton>
+							<Trash />
+						</Button>
 					}
 				/>
 				<CardContent>
@@ -107,12 +106,13 @@ export const GroupOfSpent = ({ id, color, name, description, items }: GroupOfSpe
 									sx={{ width: 150 }}
 								/>
 								<PeriodSelector value={item.spentBy} onChange={period => handleChangePeriod(item.id, period)} />
-								<IconButton onClick={() => removeSpentItem(id, item.id)} size="small">
-									<Delete />
-								</IconButton>
+								<Button onClick={() => removeSpentItem(id, item.id)} size="icon" variant="destructive">
+									<Trash />
+								</Button>
 							</Box>
 						))}
-						<Button onClick={() => addSpentItem(id)} startIcon={<AddOutlined />} variant="outlined" size="small">
+						<Button onClick={() => addSpentItem(id)} variant="outline" size="sm">
+							<Plus />
 							{t('main.addExpense')}
 						</Button>
 					</Stack>
@@ -127,7 +127,7 @@ export const GroupOfSpent = ({ id, color, name, description, items }: GroupOfSpe
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={() => setShowDeleteDialog(false)}>{t('deleteGroup.cancel')}</Button>
-					<Button onClick={handleDeleteGroup} color="error" variant="contained">
+					<Button onClick={handleDeleteGroup} variant="destructive">
 						{t('deleteGroup.confirm')}
 					</Button>
 				</DialogActions>

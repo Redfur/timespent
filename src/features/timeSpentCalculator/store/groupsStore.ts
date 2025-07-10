@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { createThrottledStorage } from '~/shared/lib/throttledStorage';
-import { generateUUID } from '~/shared/lib/uuid';
+import { createThrottledStorage } from '@/shared/lib/throttledStorage';
+import { generateUUID } from '@/shared/lib/uuid';
 import { type Group, SpentBy, type SpentItem } from '../types';
 
 // Функция для получения переведенных групп

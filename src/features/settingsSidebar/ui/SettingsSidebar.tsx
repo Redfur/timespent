@@ -1,9 +1,11 @@
-import MenuIcon from '@mui/icons-material/Menu';
-import { Box, Button, Container, Drawer, Typography } from '@mui/material';
+import { Box, Container, Drawer, Typography } from '@mui/material';
+import { Menu } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LanguageChange } from '~/widgets/languageChange';
-import { ThemeChange } from '~/widgets/themeChange';
+
+import { Button } from '@/shared/ui/button';
+import { LanguageChange } from '@/widgets/languageChange';
+import { ThemeChange } from '@/widgets/themeChange';
 import { TRANS_NS } from '../i18n';
 
 export const SettingsSidebar = () => {
@@ -12,7 +14,8 @@ export const SettingsSidebar = () => {
 
 	return (
 		<>
-			<Button startIcon={<MenuIcon />} onClick={() => setOpen(true)}>
+			<Button onClick={() => setOpen(true)}>
+				<Menu />
 				{t('title')}
 			</Button>
 			<Drawer keepMounted={false} open={open} onClose={() => setOpen(false)} anchor="right">
