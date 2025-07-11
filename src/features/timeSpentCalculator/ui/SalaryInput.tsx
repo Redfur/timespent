@@ -1,6 +1,8 @@
+import { zodResolver } from '@hookform/resolvers/zod';
 import { RussianRuble } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { Controller, FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
+import z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
@@ -14,34 +16,31 @@ const formatCurrency = (value: string) => {
 	return formattedString;
 };
 
+const salarySchema = z.object({
+	salary: z.number().positive().int().min(0, 'required'),
+});
+
 export const SalaryInput = () => {
 	const { t } = useTranslation(TRANS_NS, { keyPrefix: 'salaryInput' });
 	const { salary, updateSalary } = useSettingsStore();
-	const inputRef = useRef<HTMLInputElement>(null);
 
 	// Сброс значения в поле при изменении salary в store (например, при загрузке)
-	useEffect(() => {
-		if (inputRef.current) {
-			inputRef.current.value = salary.toLocaleString();
-		}
-	}, [salary]);
+	// useEffect(() => {
+	// 	form.setValue('salary', salary.toLocaleString());
+	// }, [salary]);
 
-	const handleCommit = () => {
-		if (inputRef.current) {
-			const formattedValue = formatCurrency(inputRef.current.value);
-			inputRef.current.value = formattedValue;
-			const numericValue = Number(formattedValue.replace(/\s/g, ''));
-			if (!Number.isNaN(numericValue)) {
-				updateSalary(numericValue);
-			}
-		}
-	};
+	const form = useForm({
+		mode: 'onBlur',
+		defaultValues: {
+			salary: salary,
+		},
+		resolver: zodResolver(salarySchema),
+	});
+	const { handleSubmit } = form;
 
-	const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-		if (e.key === 'Enter') {
-			handleCommit();
-			if (inputRef.current) inputRef.current.blur();
-		}
+	const onSubmit: SubmitHandler<z.infer<typeof salarySchema>> = data => {
+		console.log(data);
+		updateSalary(Number(data.salary));
 	};
 
 	return (
@@ -51,28 +50,43 @@ export const SalaryInput = () => {
 			</CardHeader>
 			<CardContent>
 				<Typography className="mb-2">{t('description')}</Typography>
-				<div className="space-y-2">
-					<Label htmlFor="salary">{t('title')}</Label>
-					<div className="relative">
-						<RussianRuble className="absolute left-2 top-1/2 size-4 transform -translate-y-1/2 pointer-events-none" />
-						<Input
-							ref={inputRef}
-							id="salary"
-							inputMode="numeric"
-							placeholder="50 000"
-							autoComplete="off"
-							onBlur={handleCommit}
-							onKeyDown={handleKeyDown}
-							defaultValue={salary.toLocaleString()}
-							className="pl-8 pr-32"
+				<FormProvider {...form}>
+					<form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+						<Label htmlFor="salary">{t('title')}</Label>
+						<Controller
+							control={form.control}
+							name="salary"
+							render={({ field, fieldState: { error } }) => (
+								<div className="relative">
+									<RussianRuble className="absolute left-2 top-1/2 size-4 transform -translate-y-1/2 pointer-events-none" />
+									<Input
+										id="salary"
+										inputMode="numeric"
+										type="number"
+										placeholder="50 000"
+										autoComplete="off"
+										{...field}
+										onChange={e => {
+											field.onChange(e.target.valueAsNumber);
+										}}
+										className="pl-8 pr-32"
+									/>
+									<span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm pointer-events-none">
+										{error ? (
+											<span className="text-red-500">{error?.message}</span>
+										) : (
+											<span className="text-muted-foreground">
+												{t('rubles_a_month', {
+													count: field.value,
+												})}
+											</span>
+										)}
+									</span>
+								</div>
+							)}
 						/>
-						<span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground text-sm pointer-events-none">
-							{t('rubles_a_month', {
-								count: salary,
-							})}
-						</span>
-					</div>
-				</div>
+					</form>
+				</FormProvider>
 			</CardContent>
 		</Card>
 	);
