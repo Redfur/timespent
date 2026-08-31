@@ -7,6 +7,7 @@ import { useGroupsStore } from '../store/groupsStore';
 import type { WorkTimeSettings } from '../store/settingsStore';
 import type { SpentBy } from '../types';
 import { WorkDayCalendar } from './WorkDayCalendar';
+import { WorkDaySummary } from './WorkDaySummary';
 
 interface WorkDayProgressProps {
 	salary: number;
@@ -31,18 +32,21 @@ const DAYS_PER_MONTH = 30;
 const MONTHS_PER_YEAR = 12;
 
 // Утилиты для расчета времени
-const formatTime = (hours: number): string => {
+export const formatTime = (hours: number, t: (key: string) => string): string => {
 	const dailyHours = hours / WORK_DAYS_PER_MONTH;
-	const wholeHours = Math.floor(dailyHours);
-	const minutes = Math.round((dailyHours - wholeHours) * 60);
+	const totalMinutes = Math.round(dailyHours * 60);
+	const wholeHours = Math.floor(totalMinutes / 60);
+	const minutes = totalMinutes % 60;
+	const h = t('progress.hoursShort');
+	const m = t('progress.minutesShort');
 
 	if (wholeHours === 0) {
-		return `${minutes} мин`;
+		return `${minutes} ${m}`;
 	}
 	if (minutes === 0) {
-		return `${wholeHours} ч`;
+		return `${wholeHours} ${h}`;
 	}
-	return `${wholeHours} ч ${minutes} мин`;
+	return `${wholeHours} ${h} ${minutes} ${m}`;
 };
 
 const calculateMonthlyAmount = (spent: number, spentBy: SpentBy): number => {
@@ -106,7 +110,7 @@ const useExpenseSegments = (
 				percentage: percentageOfSalary,
 				amount: expense.amount,
 				hours,
-				formattedTime: formatTime(hours),
+				formattedTime: formatTime(hours, t),
 			});
 		}
 
@@ -125,62 +129,12 @@ const useExpenseSegments = (
 				percentage: (savingsAmount / salary) * 100,
 				amount: savingsAmount,
 				hours: savingsHours,
-				formattedTime: formatTime(savingsHours),
+				formattedTime: formatTime(savingsHours, t),
 			});
 		}
 
 		return segments;
 	}, [monthlyExpenses, salary, workHours, t]);
-};
-
-// Компонент для отображения сводки
-const SummarySection = ({
-	salary,
-	totalMonthlyExpenses,
-	workHours,
-}: {
-	salary: number;
-	totalMonthlyExpenses: number;
-	workHours: number;
-}) => {
-	const { t } = useTranslation(TRANS_NS);
-
-	const hourlyRate = salary / (workHours * WORK_DAYS_PER_MONTH);
-	const workTimeForExpenses = totalMonthlyExpenses / hourlyRate;
-	const savingsAmount = salary - totalMonthlyExpenses;
-	const savingsHours = savingsAmount / hourlyRate;
-
-	// TODO: переделать на Card
-	return (
-		<Card className="gap-2">
-			<CardHeader>
-				<CardTitle>{t('progress.summary')}</CardTitle>
-			</CardHeader>
-			<CardContent>
-				<Typography variant="body2" color="secondary">
-					{t('progress.monthlyExpenses', { amount: totalMonthlyExpenses.toLocaleString() })}
-				</Typography>
-				<Typography variant="body2" color="secondary">
-					{t('progress.expensesPercentage', {
-						percentage: ((totalMonthlyExpenses / salary) * 100).toFixed(1),
-					})}
-				</Typography>
-				<Typography variant="body2" color="secondary">
-					{t('progress.workTimeForExpenses', {
-						hours: workTimeForExpenses.toFixed(1),
-					})}
-				</Typography>
-				{totalMonthlyExpenses < salary && (
-					<Typography variant="body2" color="success">
-						{t('progress.savings', {
-							amount: savingsAmount.toLocaleString(),
-							hours: savingsHours.toFixed(1),
-						})}
-					</Typography>
-				)}
-			</CardContent>
-		</Card>
-	);
 };
 
 export const WorkDayProgress = ({ salary, workTime, workHours }: WorkDayProgressProps) => {
@@ -222,7 +176,7 @@ export const WorkDayProgress = ({ salary, workTime, workHours }: WorkDayProgress
 					</div>
 				</CardContent>
 			</Card>
-			<SummarySection salary={salary} totalMonthlyExpenses={totalMonthlyExpenses} workHours={workHours} />
+			<WorkDaySummary segments={segments} salary={salary} totalMonthlyExpenses={totalMonthlyExpenses} />
 		</>
 	);
 };

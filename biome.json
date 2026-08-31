@@ -23,7 +23,8 @@
 			"!**/*.min.js",
 			"!**/*.min.css",
 			"!**/*.bundle.js",
-			"!**/*.bundle.css"
+			"!**/*.bundle.css",
+			"!.claude/**"
 		]
 	},
 	"linter": {
