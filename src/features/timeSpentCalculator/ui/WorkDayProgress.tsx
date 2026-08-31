@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useTheme } from '@/app/providers/ThemeProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Typography } from '@/shared/ui/typography';
 import { TRANS_NS } from '../i18n';
@@ -22,6 +21,8 @@ export interface ExpenseSegment {
 	amount: number;
 	hours: number;
 	formattedTime: string;
+	// Сегмент накоплений/свободного времени рендерится нейтральным цветом темы, а не своим "color"
+	isSavings?: boolean;
 }
 
 // Константы
@@ -84,7 +85,6 @@ const useExpenseSegments = (
 	salary: number,
 	workHours: number,
 ) => {
-	const { theme } = useTheme();
 	const { t } = useTranslation(TRANS_NS);
 
 	return useMemo(() => {
@@ -120,7 +120,8 @@ const useExpenseSegments = (
 
 			segments.push({
 				groupName: t('progress.savingsSegment'),
-				color: theme === 'dark' ? '#222' : '#666',
+				color: '',
+				isSavings: true,
 				percentage: (savingsAmount / salary) * 100,
 				amount: savingsAmount,
 				hours: savingsHours,
@@ -129,7 +130,7 @@ const useExpenseSegments = (
 		}
 
 		return segments;
-	}, [monthlyExpenses, salary, workHours, theme, t]);
+	}, [monthlyExpenses, salary, workHours, t]);
 };
 
 // Компонент для отображения сводки

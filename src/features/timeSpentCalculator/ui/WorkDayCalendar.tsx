@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { cn } from '@/shared/lib/utils';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/shared/ui/tooltip';
 import { Typography } from '@/shared/ui/typography';
 import { TRANS_NS } from '../i18n';
@@ -163,13 +164,21 @@ export const WorkDayCalendar = ({ segments, workTime }: WorkDayCalendarProps) =>
 
 					{layout.pieces.map(piece => {
 						const heightPx = Math.max(2, (piece.endMin - piece.startMin) * pxPerMin);
+						const isSavings = piece.segment.isSavings;
 						return (
 							<Tooltip key={piece.key}>
 								<TooltipTrigger asChild>
 									<button
 										type="button"
-										className="absolute left-0 right-0 overflow-hidden truncate px-1 text-left text-xs text-white outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-dark"
-										style={{ top: piece.startMin * pxPerMin, height: heightPx, backgroundColor: piece.color }}
+										className={cn(
+											'absolute left-0 right-0 overflow-hidden truncate px-1 text-left text-xs outline-none focus-visible:ring-2 focus-visible:ring-ring',
+											isSavings ? 'bg-muted text-muted-foreground' : 'text-white dark:text-dark',
+										)}
+										style={{
+											top: piece.startMin * pxPerMin,
+											height: heightPx,
+											...(isSavings ? {} : { backgroundColor: piece.color }),
+										}}
 									>
 										{heightPx >= 18 ? piece.groupName : ''}
 									</button>
