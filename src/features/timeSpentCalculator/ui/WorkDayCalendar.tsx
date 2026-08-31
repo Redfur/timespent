@@ -46,7 +46,9 @@ const buildCalendarLayout = (segments: ExpenseSegment[], workTime: WorkTimeSetti
 	let overflowWorkMinutes = 0;
 
 	for (const segment of segments) {
-		const dailyMinutes = Math.max(1, Math.round((segment.hours / WORK_DAYS_PER_MONTH) * 60));
+		// Без округления до целых минут — иначе погрешность округления каждого сегмента накапливается
+		// и суммарная длительность выходит за пределы расписанного дня даже без реального переполнения.
+		const dailyMinutes = Math.max(1, (segment.hours / WORK_DAYS_PER_MONTH) * 60);
 		const ws = cursor;
 		let we = cursor + dailyMinutes;
 		cursor = we;
@@ -114,81 +116,78 @@ export const WorkDayCalendar = ({ segments, workTime }: WorkDayCalendarProps) =>
 
 	return (
 		<div>
-			<div className="max-h-[520px] overflow-y-auto">
-				<div className="relative flex">
-					<div className="relative w-14 flex-none" style={{ height: hourCount * HOUR_HEIGHT_PX }}>
-						{Array.from({ length: hourCount + 1 }, (_, i) => (
-							<div
-								// biome-ignore lint/suspicious/noArrayIndexKey: фиксированная последовательность часовых меток, порядок не меняется
-								key={`hour-label-${i}`}
-								className="absolute left-0 right-2 -translate-y-1/2 text-right text-xs text-muted-foreground"
-								style={{ top: i * HOUR_HEIGHT_PX }}
-							>
-								{workTime.startTime.add(i, 'hour').format('HH:mm')}
-							</div>
-						))}
-					</div>
-
-					<div className="relative flex-1 border-l border-border" style={{ height: hourCount * HOUR_HEIGHT_PX }}>
-						{Array.from({ length: hourCount + 1 }, (_, i) => (
-							<div
-								// biome-ignore lint/suspicious/noArrayIndexKey: фиксированная последовательность часовых линий, порядок не меняется
-								key={`hour-line-${i}`}
-								className="absolute left-0 right-0 border-t border-border/50"
-								style={{ top: i * HOUR_HEIGHT_PX }}
-							/>
-						))}
-
+			<div className="relative flex">
+				<div className="relative w-14 flex-none" style={{ height: hourCount * HOUR_HEIGHT_PX }}>
+					{Array.from({ length: hourCount + 1 }, (_, i) => (
 						<div
-							className="absolute left-0 right-0 border-t-2 border-dashed border-muted-foreground/70"
-							style={{ top: layout.endOfWorkdayMin * pxPerMin }}
+							// biome-ignore lint/suspicious/noArrayIndexKey: фиксированная последовательность часовых меток, порядок не меняется
+							key={`hour-label-${i}`}
+							className="absolute left-0 right-2 -translate-y-1/2 text-right text-xs text-muted-foreground"
+							style={{ top: i * HOUR_HEIGHT_PX }}
 						>
-							<span className="absolute -top-4 right-1 text-[10px] text-muted-foreground">
-								{t('workTimeInput.endTime')}
-							</span>
+							{workTime.startTime.add(i, 'hour').format('HH:mm')}
 						</div>
+					))}
+				</div>
 
-						{layout.lunch && (
-							<div
-								className="absolute left-0 right-0 flex items-center justify-center rounded-sm bg-muted text-xs text-muted-foreground"
-								style={{
-									top: layout.lunch.startMin * pxPerMin,
-									height: (layout.lunch.endMin - layout.lunch.startMin) * pxPerMin,
-								}}
-							>
-								{t('workTimeInput.includeLunch')}
-							</div>
-						)}
+				<div className="relative flex-1 border-l border-border" style={{ height: hourCount * HOUR_HEIGHT_PX }}>
+					{Array.from({ length: hourCount + 1 }, (_, i) => (
+						<div
+							// biome-ignore lint/suspicious/noArrayIndexKey: фиксированная последовательность часовых линий, порядок не меняется
+							key={`hour-line-${i}`}
+							className="absolute left-0 right-0 border-t border-border/50"
+							style={{ top: i * HOUR_HEIGHT_PX }}
+						/>
+					))}
 
-						{layout.pieces.map(piece => {
-							const heightPx = Math.max(2, (piece.endMin - piece.startMin) * pxPerMin);
-							return (
-								<Tooltip key={piece.key}>
-									<TooltipTrigger asChild>
-										<button
-											type="button"
-											className="absolute left-0 right-0 overflow-hidden truncate px-1 text-left text-xs text-white outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-dark"
-											style={{ top: piece.startMin * pxPerMin, height: heightPx, backgroundColor: piece.color }}
-										>
-											{heightPx >= 18 ? piece.groupName : ''}
-										</button>
-									</TooltipTrigger>
-									<TooltipContent side="right">
-										<div className="font-medium">{piece.groupName}</div>
-										<div>{piece.segment.formattedTime}</div>
-										<div>
-											{workTime.startTime.add(piece.startMin, 'minute').format('HH:mm')}
-											{' – '}
-											{workTime.startTime.add(piece.endMin, 'minute').format('HH:mm')}
-										</div>
-									</TooltipContent>
-								</Tooltip>
-							);
-						})}
+					<div
+						className="absolute left-0 right-0 border-t-2 border-dashed border-muted-foreground/70"
+						style={{ top: layout.endOfWorkdayMin * pxPerMin }}
+					>
+						<span className="absolute -top-4 right-1 text-[10px] text-muted-foreground">
+							{t('workTimeInput.endTime')}
+						</span>
 					</div>
+
+					{layout.lunch && (
+						<div
+							className="absolute left-0 right-0 flex items-center justify-center rounded-sm bg-muted text-xs text-muted-foreground"
+							style={{
+								top: layout.lunch.startMin * pxPerMin,
+								height: (layout.lunch.endMin - layout.lunch.startMin) * pxPerMin,
+							}}
+						>
+							{t('workTimeInput.includeLunch')}
+						</div>
+					)}
+
+					{layout.pieces.map(piece => {
+						const heightPx = Math.max(2, (piece.endMin - piece.startMin) * pxPerMin);
+						return (
+							<Tooltip key={piece.key}>
+								<TooltipTrigger asChild>
+									<button
+										type="button"
+										className="absolute left-0 right-0 overflow-hidden truncate px-1 text-left text-xs text-white outline-none focus-visible:ring-2 focus-visible:ring-ring dark:text-dark"
+										style={{ top: piece.startMin * pxPerMin, height: heightPx, backgroundColor: piece.color }}
+									>
+										{heightPx >= 18 ? piece.groupName : ''}
+									</button>
+								</TooltipTrigger>
+								<TooltipContent side="right">
+									<div className="font-medium">{piece.groupName}</div>
+									<div>{piece.segment.formattedTime}</div>
+									<div>
+										{workTime.startTime.add(piece.startMin, 'minute').format('HH:mm')}
+										{' – '}
+										{workTime.startTime.add(piece.endMin, 'minute').format('HH:mm')}
+									</div>
+								</TooltipContent>
+							</Tooltip>
+						);
+					})}
 				</div>
 			</div>
-
 			{overflowHours > 0 && (
 				<Typography variant="caption" color="secondary" className="mt-1 block">
 					{t('progress.overflow', { count: overflowHours })}
