@@ -39,12 +39,17 @@ src/
 ### Frontend Framework
 - **React 19.1.0** - основная библиотека для UI
 - **TypeScript 5.8.3** - типизация кода
-- **Vite 7.0.2** - сборщик и dev-сервер
+- **Vite 7.0.2** (с `@vitejs/plugin-react-swc`) - сборщик и dev-сервер
 
 ### UI Framework
-- **Material-UI (MUI) 7.2.0** - компонентная библиотека
-- **@mui/x-date-pickers 8.7.0** - компоненты для работы с датами
-- **@emotion/react & @emotion/styled** - CSS-in-JS решение
+- **Tailwind CSS 4** (через `@tailwindcss/vite`, без отдельного `tailwind.config`) - утилитарные стили
+- **shadcn/ui** (стиль `new-york`) поверх **Radix UI** примитивов (`@radix-ui/react-*`: dialog, select, checkbox, radio-group, switch, tooltip, label, slot) - компонентная библиотека, генерируется в `shared/ui/`
+- **lucide-react** - иконки
+- **class-variance-authority**, **clsx**, **tailwind-merge** - утилиты для составления классов (см. `cn()` в `shared/lib/utils`)
+
+### Формы и валидация
+- **react-hook-form 7.60** + **@hookform/resolvers** - управление формами
+- **zod 4** - схемы валидации
 
 ### State Management
 - **Zustand 5.0.6** - легковесное управление состоянием с throttled persist middleware для автоматического сохранения в localStorage с задержкой 500ms
@@ -53,6 +58,9 @@ src/
 - **i18next 25.3.1** - интернационализация
 - **react-i18next 15.6.0** - React интеграция
 - Поддержка русского и английского языков
+
+### Аналитика
+- **Яндекс.Метрика** - интегрируется вручную (`shared/lib/metrika.ts`, `shared/config/metrika.ts`) и включается только в production-сборке
 
 ### Development Tools
 - **Biome 2.0.6** - линтер и форматтер кода
@@ -63,18 +71,19 @@ src/
 - **dayjs 1.11.13** - работа с датами
 - **uuid 11.1.0** - генерация уникальных идентификаторов
 
+> Тестового раннера в проекте нет (нет скрипта `test`, нет тестовых файлов) - не предполагайте наличие Jest/Vitest.
+
 ## 🎨 Дизайн и UX
 
-### Темная тема по умолчанию
-Приложение использует темную тему Material-UI для комфортной работы в любое время суток.
+### Тема оформления
+Тема (`light`/`dark`) определяется системными настройками ОС при первом запуске, затем переключается вручную и сохраняется в `localStorage` (`app/providers/ThemeProvider.tsx`).
 
 ### Адаптивный интерфейс
-- Использование Material-UI Grid системы
-- Responsive дизайн для различных размеров экранов
+- Tailwind CSS с utility-классами и responsive-модификаторами
 - Оптимизация для мобильных устройств
 
 ### Интуитивная навигация
-- Боковая панель настроек с переключателем темы и языка
+- Боковая панель настроек (выезжающая панель на базе `Sheet` из shadcn/ui) с переключателем темы и языка
 - Группировка расходов по категориям с цветовой кодировкой
 - Интерактивные формы с валидацией
 
@@ -141,8 +150,8 @@ enum SpentBy {
    - Кофе/кафе: 300 ₽/день
 
 4. **Подписки** (синий цвет)
-   - Netflix: 1,000 ₽/месяц
-   - Spotify: 500 ₽/месяц
+   - Netflix: 799 ₽/месяц
+   - Spotify: 299 ₽/месяц
    - Фитнес-клуб: 3,000 ₽/месяц
 
 5. **Развлечения** (фиолетовый цвет)
@@ -223,55 +232,61 @@ npm run check     # Проверка и форматирование
 ```
 src/
 ├── app/
-│   ├── providers/     # Провайдеры (Theme, i18n, DatePicker)
-│   ├── styles/        # Глобальные стили
+│   ├── providers/     # Провайдеры (Theme, i18n)
+│   ├── styles/        # Глобальные стили (Tailwind)
 │   └── index.tsx      # Точка входа
 ├── pages/
-│   └── main/          # Главная страница
+│   └── main/          # Главная страница (без роутера)
 ├── features/
 │   ├── timeSpentCalculator/  # Основная бизнес-логика
 │   │   ├── store/           # Zustand stores с throttled persist
 │   │   │   ├── settingsStore.ts    # Настройки рабочего времени и зарплаты
 │   │   │   └── groupsStore.ts      # Группы расходов
 │   │   ├── types/           # TypeScript типы
+│   │   ├── lib/validation/  # Zod-схемы и вспомогательная валидация
 │   │   ├── ui/              # UI компоненты
 │   │   │   ├── WorkTimeInput.tsx      # Ввод рабочего времени
 │   │   │   ├── SalaryInput.tsx        # Ввод зарплаты
 │   │   │   ├── GroupOfSpent.tsx       # Группа расходов
-│   │   │   ├── AddGroupForm.tsx       # Форма добавления группы
+│   │   │   ├── AddGroupForm.tsx       # Форма добавления группы (useState, не мигрирована на react-hook-form)
 │   │   │   ├── PeriodSelector.tsx     # Выбор периода расхода
 │   │   │   ├── WorkDayProgress.tsx    # Прогресс-бар рабочего дня
+│   │   │   ├── WorkDayCalendar.tsx    # Календарь/визуализация рабочего дня
 │   │   │   └── TimeSpentCalculator.tsx # Основной компонент
 │   │   └── i18n.ts          # Переводы
-│   └── settingsSidebar/     # Боковая панель настроек
+│   └── settingsSidebar/     # Боковая панель настроек (Sheet)
 ├── widgets/
 │   ├── themeChange/         # Переключатель темы
 │   └── languageChange/      # Переключатель языка
 └── shared/
+    ├── config/
+    │   └── metrika.ts       # Конфиг Яндекс.Метрики
     ├── lib/                 # Утилиты
     │   ├── i18n/           # Интернационализация
+    │   ├── hooks/          # Общие хуки
     │   ├── throttledStorage.ts  # Throttled localStorage
+    │   ├── metrika.ts      # Инициализация Яндекс.Метрики (только prod)
+    │   ├── utils.ts        # cn() и прочие утилиты
     │   └── uuid.ts         # Генерация UUID
-    └── ui/                  # Переиспользуемые UI компоненты
+    └── ui/                  # shadcn/Radix-компоненты (button, dialog, select, sheet, form-fields и др.)
 ```
 
 ## 🔧 Конфигурация
 
 ### Vite
 - Алиас `@` для `src/`
-- React SWC плагин для быстрой сборки
-- TypeScript поддержка
-- Base path для GitHub Pages
+- React SWC плагин (`@vitejs/plugin-react-swc`) для быстрой сборки
+- Плагин `@tailwindcss/vite` (Tailwind CSS v4, без отдельного `tailwind.config`)
+- `base: '/timespent/'` только когда `NODE_ENV === 'production'` (локально `dev`/`preview` отдаются с `/`)
 
 ### TypeScript
 - Строгая типизация
-- Path mapping для импортов
-- Современные настройки ES2020
+- Path mapping для импортов (`@/*` → `src/*`)
 
 ### Biome
-- Линтинг и форматирование кода
-- Интеграция с Husky для pre-commit hooks
-- Игнорирование системных файлов
+- Линтинг и форматирование кода (`npm run lint` / `npm run format` / `npm run check`)
+- Интеграция с Husky + lint-staged: `biome check --write` на staged `.{js,ts,jsx,tsx}` файлах в pre-commit hook
+- Правила отступов/пробелов вынесены в `.editorconfig` (см. `EDITOR_SETUP.md`), не дублируются в Biome
 
 ### Zustand с Throttled Persist
 - Автоматическое сохранение в localStorage
