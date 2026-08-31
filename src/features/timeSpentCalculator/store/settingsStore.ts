@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { createThrottledStorage } from '@/shared/lib/throttledStorage';
 
-type WorkTimeSettings = {
+export type WorkTimeSettings = {
 	startTime: Dayjs;
 	endTime: Dayjs;
 	lunchStartTime: Dayjs;

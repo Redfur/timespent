@@ -1,4 +1,3 @@
-import type { Dayjs } from 'dayjs';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/app/providers/ThemeProvider';
@@ -6,21 +5,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Typography } from '@/shared/ui/typography';
 import { TRANS_NS } from '../i18n';
 import { useGroupsStore } from '../store/groupsStore';
+import type { WorkTimeSettings } from '../store/settingsStore';
 import type { SpentBy } from '../types';
+import { WorkDayCalendar } from './WorkDayCalendar';
 
 interface WorkDayProgressProps {
 	salary: number;
-	workTime: {
-		startTime: Dayjs;
-		endTime: Dayjs;
-		lunchStartTime: Dayjs;
-		lunchEndTime: Dayjs;
-		includeLunch: boolean;
-	};
+	workTime: WorkTimeSettings;
 	workHours: number;
 }
 
-interface ExpenseSegment {
+export interface ExpenseSegment {
 	groupName: string;
 	color: string;
 	percentage: number;
@@ -30,7 +25,7 @@ interface ExpenseSegment {
 }
 
 // Константы
-const WORK_DAYS_PER_MONTH = 22;
+export const WORK_DAYS_PER_MONTH = 22;
 const DAYS_PER_MONTH = 30;
 const MONTHS_PER_YEAR = 12;
 
@@ -137,44 +132,6 @@ const useExpenseSegments = (
 	}, [monthlyExpenses, salary, workHours, theme, t]);
 };
 
-// Компонент для отображения часов
-const TimeLabels = ({ workHours, startTime }: { workHours: number; startTime: Dayjs }) => {
-	return (
-		<div>
-			{Array.from({ length: Math.ceil(workHours) + 2 }, (_, i) => {
-				const hour = startTime.hour() + i;
-				return (
-					<div key={hour} className="h-10 text-sm font-bold text-muted-foreground">
-						{hour}:00
-					</div>
-				);
-			})}
-		</div>
-	);
-};
-
-// Компонент для отображения сегментов
-const ProgressSegments = ({ segments }: { segments: ExpenseSegment[] }) => {
-	return (
-		<div className="relative h-full w-full text-sm rounded-md overflow-hidden flex flex-col">
-			{segments.map(segment => (
-				<div
-					key={segment.groupName}
-					className="flex justify-between items-start p-1 text-xs text-white dark:text-dark"
-					style={{
-						backgroundColor: segment.color,
-						height: `${segment.percentage}%`,
-						flex: '0 0 auto',
-					}}
-				>
-					<div>{segment.groupName}</div>
-					<div>{segment.formattedTime}</div>
-				</div>
-			))}
-		</div>
-	);
-};
-
 // Компонент для отображения сводки
 const SummarySection = ({
 	salary,
@@ -255,10 +212,7 @@ export const WorkDayProgress = ({ salary, workTime, workHours }: WorkDayProgress
 				</CardHeader>
 				<CardContent>
 					<div className="relative">
-						<div className="grid grid-cols-[auto_1fr] gap-3 relative overflow-hidden">
-							<TimeLabels workHours={workHours} startTime={workTime.startTime} />
-							<ProgressSegments segments={segments} />
-						</div>
+						<WorkDayCalendar segments={segments} workTime={workTime} />
 
 						<Typography variant="caption" color="secondary" className="mt-1 block">
 							{t('progress.totalHours', { hours: workHours })}

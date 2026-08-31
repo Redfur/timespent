@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { RussianRuble } from 'lucide-react';
+import { useEffect } from 'react';
 import { Controller, FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
@@ -14,11 +15,6 @@ export const SalaryInput = () => {
 	const { t } = useTranslation(TRANS_NS, { keyPrefix: 'salaryInput' });
 	const { salary, updateSalary } = useSettingsStore();
 
-	// Сброс значения в поле при изменении salary в store (например, при загрузке)
-	// useEffect(() => {
-	// 	form.setValue('salary', salary.toLocaleString());
-	// }, [salary]);
-
 	const form = useForm({
 		mode: 'onBlur',
 		defaultValues: {
@@ -26,11 +22,19 @@ export const SalaryInput = () => {
 		},
 		resolver: zodResolver(salarySchema),
 	});
-	const { handleSubmit } = form;
+	const { handleSubmit, reset } = form;
+
+	// Сброс значения в поле при изменении salary в store (например, при загрузке)
+	useEffect(() => {
+		reset({ salary });
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [salary, reset]);
 
 	const onSubmit: SubmitHandler<SalaryFormData> = data => {
 		updateSalary(data.salary);
 	};
+
+	const commit = handleSubmit(onSubmit);
 
 	return (
 		<Card className="gap-2">
@@ -40,7 +44,7 @@ export const SalaryInput = () => {
 			<CardContent>
 				<Typography className="mb-2">{t('description')}</Typography>
 				<FormProvider {...form}>
-					<form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+					<form onSubmit={commit} className="space-y-2">
 						<Label htmlFor="salary">{t('title')}</Label>
 						<Controller
 							control={form.control}
@@ -57,6 +61,10 @@ export const SalaryInput = () => {
 										{...field}
 										onChange={e => {
 											field.onChange(e.target.valueAsNumber);
+										}}
+										onBlur={() => {
+											field.onBlur();
+											commit();
 										}}
 										className="pl-8 pr-32"
 									/>

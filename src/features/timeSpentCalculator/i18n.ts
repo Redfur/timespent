@@ -54,6 +54,9 @@ const translations = {
 			hoursShort: 'ч',
 			freeTime: 'Свободное время',
 			savingsSegment: 'Накопления',
+			overflow_one: '+{{count}} час',
+			overflow_few: '+{{count}} часа',
+			overflow_many: '+{{count}} часов',
 		},
 		common: {
 			cancel: 'Отмена',
@@ -141,6 +144,8 @@ const translations = {
 			hoursShort: 'h',
 			freeTime: 'Free time',
 			savingsSegment: 'Savings',
+			overflow_one: '+{{count}} hour',
+			overflow_other: '+{{count}} hours',
 		},
 		common: {
 			cancel: 'Cancel',
