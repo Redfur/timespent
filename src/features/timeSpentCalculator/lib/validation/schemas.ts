@@ -33,7 +33,7 @@ export const groupSchema = z.object({
 
 // Схема для зарплаты
 export const salarySchema = z.object({
-	salary: z.number().min(0, 'Зарплата должна быть положительной'),
+	salary: z.number().int().positive('Зарплата должна быть положительной'),
 });
 
 // Типы для TypeScript

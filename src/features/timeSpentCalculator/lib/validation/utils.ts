@@ -1,7 +1,9 @@
+import type { Dayjs } from 'dayjs';
+
 /**
  * Преобразует dayjs объект в строку времени для input[type="time"]
  */
-export const dayjsToTimeString = (dayjs: any): string => {
+export const dayjsToTimeString = (dayjs: Dayjs | null | undefined): string => {
 	if (!dayjs || typeof dayjs.format !== 'function') {
 		return '';
 	}
@@ -11,7 +13,7 @@ export const dayjsToTimeString = (dayjs: any): string => {
 /**
  * Преобразует строку времени в dayjs объект
  */
-export const timeStringToDayjs = (timeString: string, baseDayjs: any) => {
+export const timeStringToDayjs = (timeString: string, baseDayjs: Dayjs): Dayjs => {
 	if (!timeString || !baseDayjs) {
 		return baseDayjs;
 	}

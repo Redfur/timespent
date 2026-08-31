@@ -9,6 +9,6 @@ export {
 	FormMessage,
 	useFormField,
 } from '@/shared/ui/form';
-export { ColorPicker } from './color-picker';
+export { COLORS, ColorPicker } from './color-picker';
 export { Form } from './form';
 export { FormField } from './form-field';

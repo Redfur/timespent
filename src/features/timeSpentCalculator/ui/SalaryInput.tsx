@@ -2,23 +2,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { RussianRuble } from 'lucide-react';
 import { Controller, FormProvider, type SubmitHandler, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import z from 'zod';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Typography } from '@/shared/ui/typography';
 import { TRANS_NS } from '../i18n';
+import { type SalaryFormData, salarySchema } from '../lib/validation/schemas';
 import { useSettingsStore } from '../store/settingsStore';
-
-const formatCurrency = (value: string) => {
-	const cleanedString = value.trim().replace(/\D/g, '');
-	const formattedString = cleanedString.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-	return formattedString;
-};
-
-const salarySchema = z.object({
-	salary: z.number().positive().int().min(0, 'required'),
-});
 
 export const SalaryInput = () => {
 	const { t } = useTranslation(TRANS_NS, { keyPrefix: 'salaryInput' });
@@ -38,9 +28,8 @@ export const SalaryInput = () => {
 	});
 	const { handleSubmit } = form;
 
-	const onSubmit: SubmitHandler<z.infer<typeof salarySchema>> = data => {
-		console.log(data);
-		updateSalary(Number(data.salary));
+	const onSubmit: SubmitHandler<SalaryFormData> = data => {
+		updateSalary(data.salary);
 	};
 
 	return (

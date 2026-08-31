@@ -1,57 +1,66 @@
-import type { Dayjs } from 'dayjs';
-import { useEffect, useRef } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/ui/card';
 import { Input } from '@/shared/ui/input';
 import { Label } from '@/shared/ui/label';
 import { Switch } from '@/shared/ui/switch';
 import { TRANS_NS } from '../i18n';
+import { type WorkTimeFormData, workTimeSchema } from '../lib/validation/schemas';
+import { dayjsToTimeString, timeStringToDayjs } from '../lib/validation/utils';
 import { useSettingsStore } from '../store/settingsStore';
 
 export const WorkTimeInput = () => {
 	const { t } = useTranslation(TRANS_NS);
 	const { workTime, workHours, updateWorkTime } = useSettingsStore();
 
-	const startTimeRef = useRef<Dayjs | undefined>(workTime.startTime);
-	const endTimeRef = useRef<Dayjs | undefined>(workTime.endTime);
-	const lunchStartTimeRef = useRef<Dayjs | undefined>(workTime.lunchStartTime);
-	const lunchEndTimeRef = useRef<Dayjs | undefined>(workTime.lunchEndTime);
+	const { register, handleSubmit, watch, setValue, reset } = useForm<WorkTimeFormData>({
+		mode: 'onBlur',
+		resolver: zodResolver(workTimeSchema),
+		defaultValues: {
+			startTime: dayjsToTimeString(workTime.startTime),
+			endTime: dayjsToTimeString(workTime.endTime),
+			lunchStartTime: dayjsToTimeString(workTime.lunchStartTime),
+			lunchEndTime: dayjsToTimeString(workTime.lunchEndTime),
+			includeLunch: workTime.includeLunch,
+		},
+	});
 
 	// Сброс значений при изменении store (например, при загрузке)
 	useEffect(() => {
-		startTimeRef.current = workTime.startTime;
-		endTimeRef.current = workTime.endTime;
-		lunchStartTimeRef.current = workTime.lunchStartTime;
-		lunchEndTimeRef.current = workTime.lunchEndTime;
-	}, [workTime]);
-
-	const handleCommit = () => {
-		updateWorkTime({
-			startTime: startTimeRef.current || workTime.startTime,
-			endTime: endTimeRef.current || workTime.endTime,
-			lunchStartTime: lunchStartTimeRef.current || workTime.lunchStartTime,
-			lunchEndTime: lunchEndTimeRef.current || workTime.lunchEndTime,
+		reset({
+			startTime: dayjsToTimeString(workTime.startTime),
+			endTime: dayjsToTimeString(workTime.endTime),
+			lunchStartTime: dayjsToTimeString(workTime.lunchStartTime),
+			lunchEndTime: dayjsToTimeString(workTime.lunchEndTime),
+			includeLunch: workTime.includeLunch,
 		});
-	};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [workTime, reset]);
 
-	const handleTimeKeyDown = (e: React.KeyboardEvent) => {
+	const includeLunch = watch('includeLunch');
+
+	const commit = handleSubmit(data => {
+		updateWorkTime({
+			startTime: timeStringToDayjs(data.startTime, workTime.startTime),
+			endTime: timeStringToDayjs(data.endTime, workTime.endTime),
+			lunchStartTime: timeStringToDayjs(data.lunchStartTime, workTime.lunchStartTime),
+			lunchEndTime: timeStringToDayjs(data.lunchEndTime, workTime.lunchEndTime),
+			includeLunch: data.includeLunch,
+		});
+	});
+
+	const handleTimeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Enter') {
-			handleCommit();
-			(e.target as HTMLInputElement).blur();
+			commit();
+			e.currentTarget.blur();
 		}
 	};
 
-	const handleStartTimeChange = (d: Dayjs | null) => {
-		startTimeRef.current = d || workTime.startTime;
-	};
-	const handleEndTimeChange = (d: Dayjs | null) => {
-		endTimeRef.current = d || workTime.endTime;
-	};
-	const handleLunchStartTimeChange = (d: Dayjs | null) => {
-		lunchStartTimeRef.current = d || workTime.lunchStartTime;
-	};
-	const handleLunchEndTimeChange = (d: Dayjs | null) => {
-		lunchEndTimeRef.current = d || workTime.lunchEndTime;
+	const handleIncludeLunchChange = (checked: boolean) => {
+		setValue('includeLunch', checked);
+		commit();
 	};
 
 	return (
@@ -75,68 +84,33 @@ export const WorkTimeInput = () => {
 							<Input
 								id="start-time"
 								type="time"
-								defaultValue={workTime.startTime.format('HH:mm')}
-								onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-									const time = e.target.value;
-									if (time) {
-										const [hours, minutes] = time.split(':');
-										const newTime = workTime.startTime.hour(Number.parseInt(hours)).minute(Number.parseInt(minutes));
-										handleStartTimeChange(newTime);
-									}
-								}}
-								onBlur={handleCommit}
+								{...register('startTime')}
+								onBlur={commit}
 								onKeyDown={handleTimeKeyDown}
 							/>
 						</div>
 						<div className="space-y-2 flex-1">
 							<Label htmlFor="end-time">{t('workTimeInput.endTime')}</Label>
-							<Input
-								id="end-time"
-								type="time"
-								defaultValue={workTime.endTime.format('HH:mm')}
-								onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-									const time = e.target.value;
-									if (time) {
-										const [hours, minutes] = time.split(':');
-										const newTime = workTime.endTime.hour(Number.parseInt(hours)).minute(Number.parseInt(minutes));
-										handleEndTimeChange(newTime);
-									}
-								}}
-								onBlur={handleCommit}
-								onKeyDown={handleTimeKeyDown}
-							/>
+							<Input id="end-time" type="time" {...register('endTime')} onBlur={commit} onKeyDown={handleTimeKeyDown} />
 						</div>
 					</div>
 
 					{/* Переключатель времени обеда */}
 					<Label className="flex items-center gap-2">
-						<Switch
-							checked={workTime.includeLunch}
-							onCheckedChange={checked => updateWorkTime({ includeLunch: checked })}
-						/>
+						<Switch checked={includeLunch} onCheckedChange={handleIncludeLunchChange} />
 						{t('workTimeInput.includeLunch')}
 					</Label>
 
 					{/* Время обеда */}
-					{workTime.includeLunch && (
+					{includeLunch && (
 						<div className="flex gap-4">
 							<div className="space-y-2 flex-1">
 								<Label htmlFor="lunch-start">{t('workTimeInput.lunchStart')}</Label>
 								<Input
 									id="lunch-start"
 									type="time"
-									defaultValue={workTime.lunchStartTime.format('HH:mm')}
-									onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-										const time = e.target.value;
-										if (time) {
-											const [hours, minutes] = time.split(':');
-											const newTime = workTime.lunchStartTime
-												.hour(Number.parseInt(hours))
-												.minute(Number.parseInt(minutes));
-											handleLunchStartTimeChange(newTime);
-										}
-									}}
-									onBlur={handleCommit}
+									{...register('lunchStartTime')}
+									onBlur={commit}
 									onKeyDown={handleTimeKeyDown}
 								/>
 							</div>
@@ -145,18 +119,8 @@ export const WorkTimeInput = () => {
 								<Input
 									id="lunch-end"
 									type="time"
-									defaultValue={workTime.lunchEndTime.format('HH:mm')}
-									onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-										const time = e.target.value;
-										if (time) {
-											const [hours, minutes] = time.split(':');
-											const newTime = workTime.lunchEndTime
-												.hour(Number.parseInt(hours))
-												.minute(Number.parseInt(minutes));
-											handleLunchEndTimeChange(newTime);
-										}
-									}}
-									onBlur={handleCommit}
+									{...register('lunchEndTime')}
+									onBlur={commit}
 									onKeyDown={handleTimeKeyDown}
 								/>
 							</div>

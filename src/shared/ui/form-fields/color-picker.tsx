@@ -1,7 +1,7 @@
 import { useFormContext } from 'react-hook-form';
 import { FormControl, FormField, FormItem, FormLabel } from '@/shared/ui/form';
 
-const COLORS = [
+export const COLORS = [
 	'#ff59d6', // розовый
 	'#2fd96d', // зеленый
 	'#ffb24f', // оранжевый
